@@ -1,4 +1,4 @@
-package main.java.com.ehotel.config;
+package com.ehotel.config;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,7 +1,7 @@
-package main.java.com.ehotel.dao;
+package com.ehotel.dao;
 
-import main.java.com.ehotel.config.DatabaseConfig;
-import main.java.com.ehotel.model.BookingRequest;
+import com.ehotel.config.DatabaseConfig;
+import com.ehotel.model.BookingRequest;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

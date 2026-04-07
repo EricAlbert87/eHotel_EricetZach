@@ -1,7 +1,7 @@
-package main.java.com.ehotel.dao;
+package com.ehotel.dao;
 
-import main.java.com.ehotel.config.DatabaseConfig;
-import main.java.com.ehotel.model.RoomSearchResult;
+import com.ehotel.config.DatabaseConfig;
+import com.ehotel.model.RoomSearchResult;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,9 +1,9 @@
-package main.java.com.ehotel.service;
+package com.ehotel.service;
 
-import main.java.com.ehotel.dao.ReservationDAO;
-import main.java.com.ehotel.dao.RoomDAO;
-import main.java.com.ehotel.model.BookingRequest;
-import main.java.com.ehotel.model.RoomSearchResult;
+import com.ehotel.dao.ReservationDAO;
+import com.ehotel.dao.RoomDAO;
+import com.ehotel.model.BookingRequest;
+import com.ehotel.model.RoomSearchResult;
 
 import java.util.List;
 

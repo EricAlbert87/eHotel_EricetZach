@@ -1,4 +1,4 @@
-package main.java.com.ehotel.model;
+package com.ehotel.model;
 
 public class RoomSearchResult {
     private final int chambreId;

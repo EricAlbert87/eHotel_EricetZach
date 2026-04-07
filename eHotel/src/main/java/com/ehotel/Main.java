@@ -1,8 +1,8 @@
-package main.java.com.ehotel;
+package com.ehotel;
 
-import main.java.com.ehotel.config.DatabaseConfig;
-import main.java.com.ehotel.model.RoomSearchResult;
-import main.java.com.ehotel.service.HotelService;
+import com.ehotel.config.DatabaseConfig;
+import com.ehotel.model.RoomSearchResult;
+import com.ehotel.service.HotelService;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
