@@ -1,0 +1,58 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f5f5f5;
+  color: #222;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1, h2 {
+  margin-top: 0;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+input, button {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: #0a6b70;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.room {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-top: 0.75rem;
+  background: #fafafa;
+}
+
+.message {
+  padding: 1rem;
+  background: #e8f6ea;
+  border: 1px solid #b8dfbf;
+  border-radius: 12px;
+  display: none;
+}

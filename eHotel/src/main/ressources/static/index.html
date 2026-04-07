@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eHotel App</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <main class="container">
+    <h1>eHotel App</h1>
+    <p>Application Java + PostgreSQL pour rechercher une chambre, faire une réservation et créer une location directe.</p>
+
+    <section class="card">
+      <h2>Recherche de chambres</h2>
+      <form id="searchForm">
+        <input name="zone" placeholder="Zone, ex. Ottawa Centre">
+        <input name="capacite" type="number" min="1" value="1" placeholder="Capacité">
+        <input name="prix" type="number" min="1" value="250" placeholder="Prix max">
+        <input name="superficie" type="number" min="1" value="20" placeholder="Superficie min">
+        <button type="submit">Rechercher</button>
+      </form>
+      <div id="results"></div>
+    </section>
+
+    <section class="card">
+      <h2>Créer une réservation</h2>
+      <form id="reservationForm">
+        <input name="clientId" type="number" placeholder="Client ID" required>
+        <input name="chambreId" type="number" placeholder="Chambre ID" required>
+        <input name="dateDebut" type="date" required>
+        <input name="dateFin" type="date" required>
+        <button type="submit">Réserver</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Créer une location directe</h2>
+      <form id="locationForm">
+        <input name="clientId" type="number" placeholder="Client ID" required>
+        <input name="chambreId" type="number" placeholder="Chambre ID" required>
+        <input name="employeId" type="number" placeholder="Employé ID" required>
+        <input name="dateDebut" type="date" required>
+        <input name="dateFin" type="date" required>
+        <button type="submit">Louer</button>
+      </form>
+    </section>
+
+    <div id="message" class="message"></div>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
