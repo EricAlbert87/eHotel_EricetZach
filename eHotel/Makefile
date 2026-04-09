@@ -2,6 +2,7 @@ APP_NAME=ehotel-app-1.0-SNAPSHOT-jar-with-dependencies.jar
 APP_JAR=target/$(APP_NAME)
 DB_NAME=ehotels
 DB_USER=postgres
+DB_PASSWORD=postgres
 SQL_FILE=database/ehotels_postgresql.sql
 
 SERVER_USER?=user
@@ -33,6 +34,7 @@ install:
 
 db-init:
 	@test -f "$(SQL_FILE)" || (echo "Missing SQL file: $(SQL_FILE)" && exit 1)
+	cd /tmp && sudo -u $(DB_USER) psql -c "ALTER USER $(DB_USER) WITH PASSWORD '$(DB_PASSWORD)';"
 	cd /tmp && if ! sudo -u $(DB_USER) psql -tAc "SELECT 1 FROM pg_database WHERE datname='$(DB_NAME)'" | tr -d '[:space:]' | grep -qx "1"; then sudo -u $(DB_USER) createdb $(DB_NAME); fi
 	cd /tmp && sudo -u $(DB_USER) psql -d $(DB_NAME) < "$(abspath $(SQL_FILE))"
 
