@@ -1,0 +1,21 @@
+# Python local env
+.venv/
+
+# Java / Maven build output
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# IDE / editor files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
