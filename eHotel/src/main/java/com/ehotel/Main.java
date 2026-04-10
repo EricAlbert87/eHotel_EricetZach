@@ -33,8 +33,13 @@ public class Main {
                 int capacite = Integer.parseInt(query.getOrDefault("capacite", "1"));
                 double prix = Double.parseDouble(query.getOrDefault("prix", "9999"));
                 double superficie = Double.parseDouble(query.getOrDefault("superficie", "0"));
+                String chaine = query.getOrDefault("chaine", "");
+                int categorie = Integer.parseInt(query.getOrDefault("categorie", "0"));
+                String dateDebut = query.getOrDefault("dateDebut", "");
+                String dateFin = query.getOrDefault("dateFin", "");
+                int nombreChambres = Integer.parseInt(query.getOrDefault("nombreChambres", "10"));
 
-                List<RoomSearchResult> rooms = service.searchRooms(zone, capacite, prix, superficie);
+                List<RoomSearchResult> rooms = service.searchRooms(zone, capacite, prix, superficie, chaine, categorie, dateDebut, dateFin, nombreChambres);
 
                 StringBuilder json = new StringBuilder("[");
                 for (int i = 0; i < rooms.size(); i++) {
@@ -59,23 +64,70 @@ public class Main {
             }
         });
 
-        server.createContext("/api/reservations", exchange -> {
-            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-                sendResponse(exchange, 405, "Méthode non permise", "text/plain; charset=utf-8");
-                return;
-            }
-
+        server.createContext("/api/clients", exchange -> {
             try {
-                Map<String, String> body = parseForm(exchange);
-                service.reserveRoom(
-                        Integer.parseInt(body.get("clientId")),
-                        Integer.parseInt(body.get("chambreId")),
-                        body.get("dateDebut"),
-                        body.get("dateFin")
-                );
-                sendResponse(exchange, 200, "Réservation créée avec succès.", "text/plain; charset=utf-8");
+                List<String> clients = service.getAllClients();
+                String json = "[" + String.join(",", clients.stream().map(c -> "\"" + escape(c) + "\"").toList()) + "]";
+                sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
-                sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+            }
+        });
+
+        server.createContext("/api/employees", exchange -> {
+            try {
+                List<String> employees = service.getAllEmployees();
+                String json = "[" + String.join(",", employees.stream().map(e -> "\"" + escape(e) + "\"").toList()) + "]";
+                sendResponse(exchange, 200, json, "application/json; charset=utf-8");
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+            }
+        });
+
+        server.createContext("/api/hotels", exchange -> {
+            try {
+                List<String> hotels = service.getAllHotels();
+                String json = "[" + String.join(",", hotels.stream().map(h -> "\"" + escape(h) + "\"").toList()) + "]";
+                sendResponse(exchange, 200, json, "application/json; charset=utf-8");
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+            }
+        });
+
+        server.createContext("/api/allrooms", exchange -> {
+            try {
+                List<String> rooms = service.getAllRooms();
+                String json = "[" + String.join(",", rooms.stream().map(r -> "\"" + escape(r) + "\"").toList()) + "]";
+                sendResponse(exchange, 200, json, "application/json; charset=utf-8");
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+            }
+        });
+
+        server.createContext("/api/reservations", exchange -> {
+            if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                try {
+                    List<String> reservations = service.getAllReservations();
+                    String json = "[" + String.join(",", reservations.stream().map(r -> "\"" + escape(r) + "\"").toList()) + "]";
+                    sendResponse(exchange, 200, json, "application/json; charset=utf-8");
+                } catch (Exception e) {
+                    sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                }
+            } else if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                try {
+                    Map<String, String> body = parseForm(exchange);
+                    service.reserveRoom(
+                            Integer.parseInt(body.get("clientId")),
+                            Integer.parseInt(body.get("chambreId")),
+                            body.get("dateDebut"),
+                            body.get("dateFin")
+                    );
+                    sendResponse(exchange, 200, "Réservation créée avec succès.", "text/plain; charset=utf-8");
+                } catch (Exception e) {
+                    sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
+                }
+            } else {
+                sendResponse(exchange, 405, "Méthode non permise", "text/plain; charset=utf-8");
             }
         });
 
@@ -95,6 +147,23 @@ public class Main {
                         Integer.parseInt(body.get("employeId"))
                 );
                 sendResponse(exchange, 200, "Location créée avec succès.", "text/plain; charset=utf-8");
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
+            }
+        });
+
+        server.createContext("/api/convert", exchange -> {
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Méthode non permise", "text/plain; charset=utf-8");
+                return;
+            }
+
+            try {
+                Map<String, String> body = parseForm(exchange);
+                int reservationId = Integer.parseInt(body.get("reservationId"));
+                int employeId = Integer.parseInt(body.get("employeId"));
+                service.convertReservationToLocation(reservationId, employeId);
+                sendResponse(exchange, 200, "Conversion effectuée avec succès.", "text/plain; charset=utf-8");
             } catch (Exception e) {
                 sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
             }

@@ -18,6 +18,11 @@
         <input name="capacite" type="number" min="1" value="1" placeholder="Capacité">
         <input name="prix" type="number" min="1" value="250" placeholder="Prix max">
         <input name="superficie" type="number" min="1" value="20" placeholder="Superficie min">
+        <input name="chaine" placeholder="Chaîne, ex. Northern Lights Hotels">
+        <input name="categorie" type="number" min="1" max="5" placeholder="Catégorie (1-5)">
+        <input name="dateDebut" type="date" placeholder="Date début">
+        <input name="dateFin" type="date" placeholder="Date fin">
+        <input name="nombreChambres" type="number" min="1" value="10" placeholder="Nombre de chambres">
         <button type="submit">Rechercher</button>
       </form>
       <div id="results"></div>
@@ -26,8 +31,12 @@
     <section class="card">
       <h2>Créer une réservation</h2>
       <form id="reservationForm">
-        <input name="clientId" type="number" placeholder="Client ID" required>
-        <input name="chambreId" type="number" placeholder="Chambre ID" required>
+        <select name="clientId" required>
+          <option value="">Sélectionner un client</option>
+        </select>
+        <select name="chambreId" required>
+          <option value="">Sélectionner une chambre</option>
+        </select>
         <input name="dateDebut" type="date" required>
         <input name="dateFin" type="date" required>
         <button type="submit">Réserver</button>
@@ -35,18 +44,48 @@
     </section>
 
     <section class="card">
-      <h2>Créer une location directe</h2>
+      <h2>Créer une location</h2>
       <form id="locationForm">
-        <input name="clientId" type="number" placeholder="Client ID" required>
-        <input name="chambreId" type="number" placeholder="Chambre ID" required>
-        <input name="employeId" type="number" placeholder="Employé ID" required>
+        <fieldset>
+          <legend>Type de location</legend>
+          <label><input type="radio" name="type" value="direct" checked> Directe</label>
+          <label><input type="radio" name="type" value="conversion"> Conversion</label>
+        </fieldset>
+        <select name="clientId" required>
+          <option value="">Sélectionner un client</option>
+        </select>
+        <select name="chambreId" required>
+          <option value="">Sélectionner une chambre</option>
+        </select>
+        <select name="employeId" required>
+          <option value="">Sélectionner un employé</option>
+        </select>
         <input name="dateDebut" type="date" required>
         <input name="dateFin" type="date" required>
         <button type="submit">Louer</button>
       </form>
     </section>
 
+    <section class="card">
+      <h2>Convertir une réservation en location</h2>
+      <form id="convertForm">
+        <select name="reservationId" required>
+          <option value="">Sélectionner une réservation</option>
+        </select>
+        <select name="employeId" required>
+          <option value="">Sélectionner un employé</option>
+        </select>
+        <button type="submit">Convertir</button>
+      </form>
+    </section>
+
     <div id="message" class="message"></div>
+
+    <section class="card">
+      <h2>Données</h2>
+      <button id="loadDataBtn">Charger les données</button>
+      <div id="data"></div>
+    </section>
   </main>
 
   <script src="/app.js"></script>
