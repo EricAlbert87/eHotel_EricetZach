@@ -169,24 +169,24 @@ JOIN chambre c ON c.hotel_id = h.hotel_id
 GROUP BY h.hotel_id, h.nom;
 
 INSERT INTO chaine_hotel (nom, adresse_siege, nb_hotels) VALUES
-('Northern Lights Hotels', 'Ottawa, Ontario, Canada', 0),
-('Maple Crown Resorts', 'Toronto, Ontario, Canada', 0),
-('Atlantic Breeze Inns', 'Halifax, Nova Scotia, Canada', 0),
-('Pacific Peak Suites', 'Vancouver, British Columbia, Canada', 0),
-('Continental Stay Group', 'Montreal, Quebec, Canada', 0),
-('Global Luxury Hotels', 'New York, USA', 0),
-('European Hospitality', 'London, UK', 0),
-('Asian Traveler', 'Tokyo, Japan', 0);
+('Marriott International', 'Bethesda, Maryland, USA', 0),
+('Hilton Worldwide', 'McLean, Virginia, USA', 0),
+('Hyatt Hotels Corporation', 'Chicago, Illinois, USA', 0),
+('IHG Hotels & Resorts', 'Denham, Buckinghamshire, UK', 0),
+('Accor', 'Issy-les-Moulineaux, France', 0),
+('Wyndham Hotels & Resorts', 'Parsippany, New Jersey, USA', 0),
+('Choice Hotels', 'Rockville, Maryland, USA', 0),
+('Best Western', 'Phoenix, Arizona, USA', 0);
 
 INSERT INTO chaine_email (chaine_id, email) VALUES
-(1, 'contact@northernlights.ca'),
-(2, 'contact@maplecrown.ca'),
-(3, 'contact@atlanticbreeze.ca'),
-(4, 'contact@pacificpeak.ca'),
-(5, 'contact@continentalstay.ca'),
-(6, 'reservations@globalluxury.com'),
-(7, 'info@europeanhosp.co.uk'),
-(8, 'bookings@asianhotel.jp');
+(1, 'contact@marriott.com'),
+(2, 'contact@hilton.com'),
+(3, 'contact@hyatt.com'),
+(4, 'contact@ihg.com'),
+(5, 'contact@accor.com'),
+(6, 'reservations@wyndham.com'),
+(7, 'info@choicehotels.com'),
+(8, 'bookings@bestwestern.com');
 
 INSERT INTO chaine_telephone (chaine_id, telephone) VALUES
 (1, '1-613-555-1001'),
@@ -199,24 +199,24 @@ INSERT INTO chaine_telephone (chaine_id, telephone) VALUES
 (8, '+81-3-555-1008');
 
 INSERT INTO hotel (chaine_id, nom, categorie, adresse, zone, nb_chambres, email_contact, telephone_contact) VALUES
-(1, 'NL Ottawa Downtown', 5, '100 Wellington St, Ottawa, ON', 'Ottawa Centre', 25, 'ottawa@northernlights.ca', '613-555-2001'),
-(1, 'NL Toronto Union', 5, '10 Front St, Toronto, ON', 'Toronto Centre', 30, 'toronto@northernlights.ca', '416-555-2004'),
-(1, 'NL Montreal Central', 4, '300 Rue Sainte-Catherine, Montreal, QC', 'Montreal Centre', 20, 'montreal@northernlights.ca', '514-555-2003'),
-(1, 'NL Vancouver Bay', 5, '99 Bay Ave, Vancouver, BC', 'Vancouver Bay', 28, 'vancouver@northernlights.ca', '604-555-2008'),
-(2, 'MC Toronto Lakeshore', 5, '88 Lake Shore Blvd, Toronto, ON', 'Toronto Waterfront', 32, 'lakeshore@maplecrown.ca', '416-555-2104'),
-(2, 'MC Ottawa Central', 4, '110 Elgin St, Ottawa, ON', 'Ottawa Centre', 22, 'ottawa@maplecrown.ca', '613-555-2101'),
-(3, 'AB Halifax Central', 5, '11 Spring Garden Rd, Halifax, NS', 'Halifax Centre', 24, 'halifax@atlanticbreeze.ca', '902-555-2201'),
-(3, 'AB St Johns Port', 4, '30 Port Ave, St Johns, NL', 'St Johns Port', 18, 'stjohns@atlanticbreeze.ca', '709-555-2205'),
-(4, 'PP Vancouver Central', 5, '60 Granville St, Vancouver, BC', 'Vancouver Centre', 26, 'van@pacificpeak.ca', '604-555-2301'),
-(4, 'PP Whistler Alpine', 5, '78 Alpine Rd, Whistler, BC', 'Whistler Alpine', 20, 'whistler@pacificpeak.ca', '604-555-2307'),
-(5, 'CS Montreal Downtown', 5, '90 Rene-Levesque Blvd, Montreal, QC', 'Montreal Centre', 28, 'montreal@continentalstay.ca', '514-555-2401'),
-(5, 'CS Quebec Palace', 5, '100 Grande Allee, Quebec City, QC', 'Quebec Centre', 25, 'quebec@continentalstay.ca', '418-555-2406'),
-(6, 'GL New York Times Square', 5, '1500 Broadway, New York, NY', 'Times Square', 35, 'newyork@globalluxury.com', '212-555-3001'),
-(6, 'GL Los Angeles Sunset', 5, '5000 Sunset Blvd, Los Angeles, CA', 'Los Angeles', 30, 'losangeles@globalluxury.com', '213-555-3002'),
-(7, 'EH London Piccadilly', 5, '100 Piccadilly, London, UK', 'London Centre', 40, 'london@europeanhosp.co.uk', '207-555-4001'),
-(7, 'EH Paris Champs', 5, '50 Avenue des Champs-Élysées, Paris, France', 'Paris Centre', 36, 'paris@europeanhosp.co.uk', '147-555-4002'),
-(8, 'AT Tokyo Shibuya', 5, '1 Shibuya Crossing, Tokyo, Japan', 'Shibuya', 32, 'tokyo@asianhotel.jp', '335-555-5001'),
-(8, 'AT Bangkok Royal', 4, '150 Rajadamri Road, Bangkok, Thailand', 'Bangkok Centre', 28, 'bangkok@asianhotel.jp', '226-555-5002');
+(1, 'Marriott Ottawa Downtown', 5, '100 Wellington St, Ottawa, ON', 'Ottawa Centre', 25, 'ottawa@marriott.com', '613-555-2001'),
+(1, 'Marriott Toronto Union', 5, '10 Front St, Toronto, ON', 'Toronto Centre', 30, 'toronto@marriott.com', '416-555-2004'),
+(1, 'Marriott Montreal Central', 4, '300 Rue Sainte-Catherine, Montreal, QC', 'Montreal Centre', 20, 'montreal@marriott.com', '514-555-2003'),
+(1, 'Marriott Vancouver Bay', 5, '99 Bay Ave, Vancouver, BC', 'Vancouver Bay', 28, 'vancouver@marriott.com', '604-555-2008'),
+(2, 'Hilton Toronto Lakeshore', 5, '88 Lake Shore Blvd, Toronto, ON', 'Toronto Waterfront', 32, 'lakeshore@hilton.com', '416-555-2104'),
+(2, 'Hilton Ottawa Central', 4, '110 Elgin St, Ottawa, ON', 'Ottawa Centre', 22, 'ottawa@hilton.com', '613-555-2101'),
+(3, 'Hyatt Halifax Central', 5, '11 Spring Garden Rd, Halifax, NS', 'Halifax Centre', 24, 'halifax@hyatt.com', '902-555-2201'),
+(3, 'Hyatt St Johns Port', 4, '30 Port Ave, St Johns, NL', 'St Johns Port', 18, 'stjohns@hyatt.com', '709-555-2205'),
+(4, 'IHG Vancouver Central', 5, '60 Granville St, Vancouver, BC', 'Vancouver Centre', 26, 'van@ihg.com', '604-555-2301'),
+(4, 'IHG Whistler Alpine', 5, '78 Alpine Rd, Whistler, BC', 'Whistler Alpine', 20, 'whistler@ihg.com', '604-555-2307'),
+(5, 'Accor Montreal Downtown', 5, '90 Rene-Levesque Blvd, Montreal, QC', 'Montreal Centre', 28, 'montreal@accor.com', '514-555-2401'),
+(5, 'Accor Quebec Palace', 5, '100 Grande Allee, Quebec City, QC', 'Quebec Centre', 25, 'quebec@accor.com', '418-555-2406'),
+(6, 'Wyndham New York Times Square', 5, '1500 Broadway, New York, NY', 'Times Square', 35, 'newyork@wyndham.com', '212-555-3001'),
+(6, 'Wyndham Los Angeles Sunset', 5, '5000 Sunset Blvd, Los Angeles, CA', 'Los Angeles', 30, 'losangeles@wyndham.com', '213-555-3002'),
+(7, 'Choice London Piccadilly', 5, '100 Piccadilly, London, UK', 'London Centre', 40, 'london@choicehotels.com', '207-555-4001'),
+(7, 'Choice Paris Champs', 5, '50 Avenue des Champs-Élysées, Paris, France', 'Paris Centre', 36, 'paris@choicehotels.com', '147-555-4002'),
+(8, 'Best Western Tokyo Shibuya', 5, '1 Shibuya Crossing, Tokyo, Japan', 'Shibuya', 32, 'tokyo@bestwestern.com', '335-555-5001'),
+(8, 'Best Western Bangkok Royal', 4, '150 Rajadamri Road, Bangkok, Thailand', 'Bangkok Centre', 28, 'bangkok@bestwestern.com', '226-555-5002');
 
 INSERT INTO employe (hotel_id, nom_complet, adresse, nas, role_hotel, email, telephone) VALUES
 (1, 'Jean Dupont', '100 Wellington St, Ottawa, ON', 'EMP000001', 'Gestionnaire', 'jean.dupont@northernlights.ca', '613-555-6001'),

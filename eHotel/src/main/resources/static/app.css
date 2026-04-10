@@ -18,14 +18,14 @@ body {
 
 h1 {
   margin: 0 0 0.5rem 0;
-  color: #fff;
+  color: #333;
   font-size: 2.5rem;
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  text-shadow: none;
 }
 
 .container > p {
-  color: rgba(255,255,255,0.9);
+  color: #666;
   margin-bottom: 2rem;
   font-size: 1.1rem;
 }
