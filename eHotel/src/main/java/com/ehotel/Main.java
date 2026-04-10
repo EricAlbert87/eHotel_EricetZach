@@ -12,7 +12,12 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.List;
 import java.util.Map;
 
@@ -64,10 +69,19 @@ public class Main {
             }
         });
 
-        server.createContext("/api/clients", exchange -> {
+        server.createContext("/api/chains", exchange -> {
             try {
-                List<String> clients = service.getAllClients();
-                String json = "[" + String.join(",", clients.stream().map(c -> "\"" + escape(c) + "\"").toList()) + "]";
+                // Get distinct chains from hotels or chaine_hotel
+                List<String> chains = new ArrayList<>();
+                String sql = "SELECT nom FROM chaine_hotel ORDER BY nom";
+                try (Connection conn = DatabaseConfig.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql);
+                     ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        chains.add(rs.getString("nom"));
+                    }
+                }
+                String json = "[" + String.join(",", chains.stream().map(c -> "\"" + escape(c) + "\"").toList()) + "]";
                 sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
                 sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");

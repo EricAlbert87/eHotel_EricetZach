@@ -14,12 +14,18 @@ async function loadSelect(url, selectElement) {
   try {
     const response = await fetch(url);
     const data = await response.json();
-    selectElement.innerHTML = '<option value="">Sélectionner</option>';
+    const firstOption = selectElement.querySelector('option');
+    selectElement.innerHTML = firstOption ? firstOption.outerHTML : '<option value="">Sélectionner</option>';
     data.forEach(item => {
       const option = document.createElement('option');
-      const [id, name] = item.split(': ', 2);
-      option.value = id;
-      option.textContent = item;
+      if (typeof item === 'string' && item.includes(':')) {
+        const [id, name] = item.split(': ', 2);
+        option.value = id;
+        option.textContent = item;
+      } else {
+        option.value = item;
+        option.textContent = item;
+      }
       selectElement.appendChild(option);
     });
   } catch (e) {
@@ -35,7 +41,36 @@ async function loadData() {
   await loadSelect('/api/employees', locationForm.querySelector('[name=employeId]'));
   await loadSelect('/api/employees', convertForm.querySelector('[name=employeId]'));
   await loadSelect('/api/reservations', convertForm.querySelector('[name=reservationId]'));
+  await loadSelect('/api/reservations', locationForm.querySelector('[name=reservationId]'));
+  await loadSelect('/api/chains', searchForm.querySelector('[name=chaine]'));
 }
+
+document.addEventListener('DOMContentLoaded', loadData);
+
+// Handle radio button change for location type
+locationForm.querySelectorAll('[name=type]').forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    const directFields = document.getElementById('directFields');
+    const conversionFields = document.getElementById('conversionFields');
+    if (e.target.value === 'direct') {
+      directFields.style.display = 'grid';
+      conversionFields.style.display = 'none';
+      locationForm.querySelector('[name=reservationId]').required = false;
+      locationForm.querySelector('[name=clientId]').required = true;
+      locationForm.querySelector('[name=chambreId]').required = true;
+      locationForm.querySelector('[name=dateDebut]').required = true;
+      locationForm.querySelector('[name=dateFin]').required = true;
+    } else {
+      directFields.style.display = 'none';
+      conversionFields.style.display = 'grid';
+      locationForm.querySelector('[name=reservationId]').required = true;
+      locationForm.querySelector('[name=clientId]').required = false;
+      locationForm.querySelector('[name=chambreId]').required = false;
+      locationForm.querySelector('[name=dateDebut]').required = false;
+      locationForm.querySelector('[name=dateFin]').required = false;
+    }
+  });
+});
 
 document.addEventListener('DOMContentLoaded', loadData);
 
@@ -114,10 +149,7 @@ locationForm.addEventListener('submit', async (e) => {
   const body = new URLSearchParams(new FormData(locationForm));
   let url = '/api/locations';
   if (type === 'conversion') {
-    // For conversion, use convert API, but need reservationId
-    // But the form doesn't have reservationId, it's in convertForm
-    // Perhaps redirect or something, but for now, assume direct
-    url = '/api/locations';
+    url = '/api/convert';
   }
 
   const response = await fetch(url, {

@@ -18,8 +18,17 @@
         <input name="capacite" type="number" min="1" value="1" placeholder="Capacité">
         <input name="prix" type="number" min="1" value="250" placeholder="Prix max">
         <input name="superficie" type="number" min="1" value="20" placeholder="Superficie min">
-        <input name="chaine" placeholder="Chaîne, ex. Northern Lights Hotels">
-        <input name="categorie" type="number" min="1" max="5" placeholder="Catégorie (1-5)">
+        <select name="chaine">
+          <option value="">Toutes les chaînes</option>
+        </select>
+        <select name="categorie">
+          <option value="0">Toutes les catégories</option>
+          <option value="1">1 étoile</option>
+          <option value="2">2 étoiles</option>
+          <option value="3">3 étoiles</option>
+          <option value="4">4 étoiles</option>
+          <option value="5">5 étoiles</option>
+        </select>
         <input name="dateDebut" type="date" placeholder="Date début">
         <input name="dateFin" type="date" placeholder="Date fin">
         <input name="nombreChambres" type="number" min="1" value="10" placeholder="Nombre de chambres">
@@ -49,19 +58,26 @@
         <fieldset>
           <legend>Type de location</legend>
           <label><input type="radio" name="type" value="direct" checked> Directe</label>
-          <label><input type="radio" name="type" value="conversion"> Conversion</label>
+          <label><input type="radio" name="type" value="conversion"> Conversion de réservation</label>
         </fieldset>
-        <select name="clientId" required>
-          <option value="">Sélectionner un client</option>
-        </select>
-        <select name="chambreId" required>
-          <option value="">Sélectionner une chambre</option>
-        </select>
+        <div id="directFields">
+          <select name="clientId" required>
+            <option value="">Sélectionner un client</option>
+          </select>
+          <select name="chambreId" required>
+            <option value="">Sélectionner une chambre</option>
+          </select>
+          <input name="dateDebut" type="date" required>
+          <input name="dateFin" type="date" required>
+        </div>
+        <div id="conversionFields" style="display: none;">
+          <select name="reservationId" required>
+            <option value="">Sélectionner une réservation</option>
+          </select>
+        </div>
         <select name="employeId" required>
           <option value="">Sélectionner un employé</option>
         </select>
-        <input name="dateDebut" type="date" required>
-        <input name="dateFin" type="date" required>
         <button type="submit">Louer</button>
       </form>
     </section>
