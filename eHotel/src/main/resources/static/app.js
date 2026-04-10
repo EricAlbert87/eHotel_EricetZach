@@ -103,6 +103,7 @@ async function loadData() {
   await loadSelect('/api/reservations', document.getElementById('archiveReservationSelect'));
   await loadSelect('/api/locations', document.getElementById('archiveLocationSelect'));
   await loadReservationsList();
+  await loadCurrentReservations();
 }
 
 // Handle radio button change for location type
@@ -135,16 +136,16 @@ async function loadReservationsList() {
   try {
     const response = await fetch('/api/reservations');
     const reservations = await response.json();
-    
+
     if (!reservations.length) {
       listDiv.innerHTML = '<p style="text-align: center; color: #999;">Aucune réservation disponible</p>';
       return;
     }
-    
+
     let html = '<table style="width: 100%; border-collapse: collapse;">';
     html += '<thead><tr style="border-bottom: 2px solid #ddd; background: #f9fafb;"><th style="padding: 12px; text-align: left; font-weight: 600;">ID</th><th style="padding: 12px; text-align: left; font-weight: 600;">Client</th><th style="padding: 12px; text-align: left; font-weight: 600;">Montant</th></tr></thead>';
     html += '<tbody>';
-    
+
     reservations.forEach((res) => {
       html += '<tr style="border-bottom: 1px solid #eee; hover: { background: #f1f9ff; }">';
       html += `<td style="padding: 12px; color: #667eea; font-weight: 600;">${res.split(': ')[0]}</td>`;
@@ -152,7 +153,7 @@ async function loadReservationsList() {
       html += `<td style="padding: 12px;">En cours</td>`;
       html += '</tr>';
     });
-    
+
     html += '</tbody></table>';
     listDiv.innerHTML = html;
   } catch (e) {
@@ -193,14 +194,14 @@ document.getElementById('loadDataBtn').addEventListener('click', async () => {
       const response = await fetch(ep.url);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const items = await response.json();
-      
+
       const section = document.createElement('div');
       section.className = 'data-section';
       section.innerHTML = `<h3>${ep.name}</h3>`;
-      
+
       const table = document.createElement('table');
       table.className = 'data-table';
-      
+
       const thead = document.createElement('thead');
       const headerRow = document.createElement('tr');
       ep.headers.forEach(h => {
@@ -210,7 +211,7 @@ document.getElementById('loadDataBtn').addEventListener('click', async () => {
       });
       thead.appendChild(headerRow);
       table.appendChild(thead);
-      
+
       const tbody = document.createElement('tbody');
       if (items.length === 0) {
         const tr = document.createElement('tr');
@@ -242,7 +243,7 @@ document.getElementById('loadDataBtn').addEventListener('click', async () => {
           tbody.appendChild(row);
         });
       }
-      
+
       table.appendChild(tbody);
       section.appendChild(table);
       dataDiv.appendChild(section);
@@ -262,7 +263,7 @@ searchForm.addEventListener('submit', async (e) => {
   const params = new URLSearchParams(new FormData(searchForm));
   const resultsDiv = document.getElementById('results');
   resultsDiv.innerHTML = '<p style="text-align: center; color: #667eea; font-weight: 600;">⏳ Recherche en cours...</p>';
-  
+
   try {
     const response = await fetch('/api/rooms?' + params.toString());
     const rooms = await response.json();
@@ -435,8 +436,78 @@ document.getElementById('archiveLocationBtn').addEventListener('click', async ()
   }
 });
 
+async function loadCurrentReservations() {
+  const container = document.getElementById('currentReservationsContainer');
+  try {
+    const response = await fetch('/api/reservations');
+    const reservations = await response.json();
+
+    if (!reservations.length) {
+      container.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem;">😊 Aucune réservation active pour le moment.</p>';
+      return;
+    }
+
+    let html = '<table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">';
+    html += '<thead>';
+    html += '<tr style="background: #f3f4f6; border-bottom: 2px solid #e5e7eb;">';
+    html += '<th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151;">🆔 ID</th>';
+    html += '<th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151;">👤 Client</th>';
+    html += '<th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151;">🛏️ Chambre</th>';
+    html += '<th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151;">📅 Arrivée</th>';
+    html += '<th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151;">📅 Départ</th>';
+    html += '<th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151;">⏱️ Durée</th>';
+    html += '</tr>';
+    html += '</thead>';
+    html += '<tbody>';
+
+    reservations.forEach((res, idx) => {
+      // Parse the reservation string: "1: Client 1, Chambre 3, 2030-06-10 to 2030-06-12"
+      const match = res.match(/(\d+): Client (\d+), Chambre (\d+), (.+) to (.+)/);
+      if (match) {
+        const [, resId, clientId, chambreId, dateDebut, dateFin] = match;
+
+        // Calculate duration
+        const start = new Date(dateDebut);
+        const end = new Date(dateFin);
+        const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+
+        const rowBg = idx % 2 === 0 ? 'white' : '#f9fafb';
+        html += `<tr style="background: ${rowBg}; border-bottom: 1px solid #e5e7eb;">`;
+        html += `<td style="padding: 1rem; color: #667eea; font-weight: 600;">${resId}</td>`;
+        html += `<td style="padding: 1rem; color: #374151;">${clientId}</td>`;
+        html += `<td style="padding: 1rem; color: #374151;">${chambreId}</td>`;
+        html += `<td style="padding: 1rem; color: #374151;">${dateDebut}</td>`;
+        html += `<td style="padding: 1rem; color: #374151;">${dateFin}</td>`;
+        html += `<td style="padding: 1rem; color: #667eea; font-weight: 500;">${duration} nuit${duration > 1 ? 's' : ''}</td>`;
+        html += '</tr>';
+      }
+    });
+
+    html += '</tbody>';
+    html += '</table>';
+
+    // Add summary
+    const summary = document.createElement('div');
+    summary.style.marginTop = '1.5rem';
+    summary.style.padding = '1rem';
+    summary.style.background = '#eff6ff';
+    summary.style.border = '1px solid #bfdbfe';
+    summary.style.borderRadius = '8px';
+    summary.style.color = '#1e40af';
+    summary.style.fontSize = '0.9rem';
+    summary.innerHTML = `📊 Total: <strong>${reservations.length}</strong> réservation${reservations.length > 1 ? 's' : ''} active${reservations.length > 1 ? 's' : ''}`;
+
+    container.innerHTML = html;
+    container.appendChild(summary);
+  } catch (e) {
+    console.error(e);
+    container.innerHTML = `<p style="color: #e74c3c; font-weight: 500;">❌ Erreur lors du chargement: ${e.message}</p>`;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadData();
+  loadCurrentReservations();
 
   // Tab switching
   document.querySelectorAll('.tab-button').forEach(button => {
@@ -445,6 +516,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       button.classList.add('active');
       document.getElementById(button.dataset.tab).classList.add('active');
+
+      // Load reservations when switching to that tab
+      if (button.dataset.tab === 'reservations') {
+        loadCurrentReservations();
+      }
     });
   });
 });

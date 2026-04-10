@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Application eHotel</title>
   <link rel="stylesheet" href="/app.css">
 </head>
+
 <body>
   <main class="container">
     <h1>Application eHotel</h1>
@@ -15,6 +17,7 @@
       <button class="tab-button active" data-tab="search">Recherche</button>
       <button class="tab-button" data-tab="reservation">Réservation</button>
       <button class="tab-button" data-tab="location">Location</button>
+      <button class="tab-button" data-tab="reservations">Réservations Actuelles</button>
       <button class="tab-button" data-tab="data">Données</button>
       <button class="tab-button" data-tab="archive">Archivage</button>
     </nav>
@@ -24,88 +27,46 @@
       <section class="card">
         <h2>🔍 Recherche de chambres</h2>
         <p>Trouvez les meilleures chambres selon vos critères de recherche.</p>
-      <form id="searchForm">
-        <div class="form-row">
-          <select name="zone">
-            <option value="">📍 Toutes les zones</option>
-          </select>
-          <input name="capacite" type="number" min="1" value="1" placeholder="👥 Capacité minimum">
-          <input name="prix" type="number" min="1" value="250" placeholder="💰 Prix maximum">
-        </div>
-        <div class="form-row">
-          <input name="superficie" type="number" min="1" value="20" placeholder="📐 Superficie minimum (m²)">
-          <select name="chaine">
-            <option value="">🏨 Toutes les chaînes</option>
-          </select>
-          <select name="categorie">
-            <option value="0">⭐ Toutes les catégories</option>
-            <option value="1">⭐ 1 étoile</option>
-            <option value="2">⭐⭐ 2 étoiles</option>
-            <option value="3">⭐⭐⭐ 3 étoiles</option>
-            <option value="4">⭐⭐⭐⭐ 4 étoiles</option>
-            <option value="5">⭐⭐⭐⭐⭐ 5 étoiles</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <input name="dateDebut" type="date" placeholder="📅 Date d'arrivée">
-          <input name="dateFin" type="date" placeholder="📅 Date de départ">
-          <input name="nombreChambres" type="number" min="1" value="10" placeholder="🔢 Nombre de résultats">
-        </div>
-        <button type="submit" class="btn-primary">🔎 Rechercher des chambres</button>
-      </form>
-      <div id="results"></div>
-    </section>
+        <form id="searchForm">
+          <div class="form-row">
+            <select name="zone">
+              <option value="">📍 Toutes les zones</option>
+            </select>
+            <input name="capacite" type="number" min="1" value="1" placeholder="👥 Capacité minimum">
+            <input name="prix" type="number" min="1" value="250" placeholder="💰 Prix maximum">
+          </div>
+          <div class="form-row">
+            <input name="superficie" type="number" min="1" value="20" placeholder="📐 Superficie minimum (m²)">
+            <select name="chaine">
+              <option value="">🏨 Toutes les chaînes</option>
+            </select>
+            <select name="categorie">
+              <option value="0">⭐ Toutes les catégories</option>
+              <option value="1">⭐ 1 étoile</option>
+              <option value="2">⭐⭐ 2 étoiles</option>
+              <option value="3">⭐⭐⭐ 3 étoiles</option>
+              <option value="4">⭐⭐⭐⭐ 4 étoiles</option>
+              <option value="5">⭐⭐⭐⭐⭐ 5 étoiles</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <input name="dateDebut" type="date" placeholder="📅 Date d'arrivée">
+            <input name="dateFin" type="date" placeholder="📅 Date de départ">
+            <input name="nombreChambres" type="number" min="1" value="10" placeholder="🔢 Nombre de résultats">
+          </div>
+          <button type="submit" class="btn-primary">🔎 Rechercher des chambres</button>
+        </form>
+        <div id="results"></div>
+      </section>
     </div>
 
     <div id="reservation" class="tab-content">
-    <div class="message" style="display: none;"></div>
-    <section class="card">
-      <h2>📝 Créer une réservation</h2>
-      <p>Réservez une chambre pour un client. La réservation ne sera pas confirmée tant que le client n'aura pas effectué le check-in.</p>
-      <form id="reservationForm">
-        <div class="form-row">
-          <select name="clientId" required>
-            <option value="">👤 Choisir un client</option>
-          </select>
-          <select name="chambreId" required>
-            <option value="">🛏️ Choisir une chambre</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <input name="dateDebut" type="date" required placeholder="📅 Date d'arrivée">
-          <input name="dateFin" type="date" required placeholder="📅 Date de départ">
-        </div>
-        <button type="submit" class="btn-primary">✅ Créer la réservation</button>
-      </form>
-    </section>
-    </div>
-
-    <div id="location" class="tab-content">
-    <div class="message" style="display: none;"></div>
-    <section class="card">
-      <h2>🔑 Créer une location</h2>
-      <p>Créez une location directe ou convertissez une réservation existante en location avec check-in.</p>
-      <form id="locationForm">
-        <fieldset style="border: 2px solid #dbeafe; border-radius: 12px; padding: 1.5rem; background: #f1f9ff;">
-          <legend style="padding: 0 1rem; font-weight: 600; color: #667eea;">📋 Sélectionner le type de location</legend>
-          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-            <label style="display: flex; align-items: flex-start; cursor: pointer;">
-              <input type="radio" name="type" value="direct" checked style="margin-top: 0.25rem; cursor: pointer;">
-              <div style="margin-left: 1rem;">
-                <div style="font-weight: 600; color: #1f2937;">🆕 Nouvelle location directe</div>
-                <small style="color: #666; display: block; margin-top: 0.25rem;">Créer une location sans réservation préalable</small>
-              </div>
-            </label>
-            <label style="display: flex; align-items: flex-start; cursor: pointer;">
-              <input type="radio" name="type" value="conversion" style="margin-top: 0.25rem; cursor: pointer;">
-              <div style="margin-left: 1rem;">
-                <div style="font-weight: 600; color: #1f2937;">🔄 Convertir une réservation</div>
-                <small style="color: #666; display: block; margin-top: 0.25rem;">Transformer une réservation existante en location avec check-in</small>
-              </div>
-            </label>
-          </div>
-        </fieldset>
-        <div id="directFields">
+      <div class="message" style="display: none;"></div>
+      <section class="card">
+        <h2>📝 Créer une réservation</h2>
+        <p>Réservez une chambre pour un client. La réservation ne sera pas confirmée tant que le client n'aura pas
+          effectué le check-in.</p>
+        <form id="reservationForm">
           <div class="form-row">
             <select name="clientId" required>
               <option value="">👤 Choisir un client</option>
@@ -118,83 +79,144 @@
             <input name="dateDebut" type="date" required placeholder="📅 Date d'arrivée">
             <input name="dateFin" type="date" required placeholder="📅 Date de départ">
           </div>
+          <button type="submit" class="btn-primary">✅ Créer la réservation</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="location" class="tab-content">
+      <div class="message" style="display: none;"></div>
+      <section class="card">
+        <h2>🔑 Créer une location</h2>
+        <p>Créez une location directe ou convertissez une réservation existante en location avec check-in.</p>
+        <form id="locationForm">
+          <fieldset style="border: 2px solid #dbeafe; border-radius: 12px; padding: 1.5rem; background: #f1f9ff;">
+            <legend style="padding: 0 1rem; font-weight: 600; color: #667eea;">📋 Sélectionner le type de location
+            </legend>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+              <label style="display: flex; align-items: flex-start; cursor: pointer;">
+                <input type="radio" name="type" value="direct" checked style="margin-top: 0.25rem; cursor: pointer;">
+                <div style="margin-left: 1rem;">
+                  <div style="font-weight: 600; color: #1f2937;">🆕 Nouvelle location directe</div>
+                  <small style="color: #666; display: block; margin-top: 0.25rem;">Créer une location sans réservation
+                    préalable</small>
+                </div>
+              </label>
+              <label style="display: flex; align-items: flex-start; cursor: pointer;">
+                <input type="radio" name="type" value="conversion" style="margin-top: 0.25rem; cursor: pointer;">
+                <div style="margin-left: 1rem;">
+                  <div style="font-weight: 600; color: #1f2937;">🔄 Convertir une réservation</div>
+                  <small style="color: #666; display: block; margin-top: 0.25rem;">Transformer une réservation existante
+                    en location avec check-in</small>
+                </div>
+              </label>
+            </div>
+          </fieldset>
+          <div id="directFields">
+            <div class="form-row">
+              <select name="clientId" required>
+                <option value="">👤 Choisir un client</option>
+              </select>
+              <select name="chambreId" required>
+                <option value="">🛏️ Choisir une chambre</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <input name="dateDebut" type="date" required placeholder="📅 Date d'arrivée">
+              <input name="dateFin" type="date" required placeholder="📅 Date de départ">
+            </div>
+          </div>
+          <div id="conversionFields" style="display: none;">
+            <div class="form-row">
+              <select name="reservationId" required>
+                <option value="">📋 Choisir une réservation</option>
+              </select>
+            </div>
+            <div id="reservationDetails"
+              style="background: #f0f9ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 1rem; margin: 1rem 0; display: none;">
+              <p style="margin: 0; color: #1f2937; font-size: 0.9rem;"><strong>Détails de la réservation:</strong></p>
+              <p id="reservationDetailText" style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.85rem;"></p>
+            </div>
+          </div>
+          <div class="form-row">
+            <select name="employeId" required>
+              <option value="">👨‍💼 Choisir un employé</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary">✅ Créer la location</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>📋 Réservations disponibles</h2>
+        <p>Voici les réservations actives qui peuvent être converties en locations.</p>
+        <div id="reservationsList" style="background: #f9fafb; border-radius: 12px; padding: 1.5rem;">
+          <p style="text-align: center; color: #999; font-size: 0.9rem;">⏳ Chargement des réservations...</p>
         </div>
-        <div id="conversionFields" style="display: none;">
+      </section>
+
+      <section class="card">
+        <h2>🔄 Convertir une réservation</h2>
+        <p>Convertissez rapidement une réservation existante en location avec check-in.</p>
+        <form id="convertForm">
           <div class="form-row">
             <select name="reservationId" required>
               <option value="">📋 Choisir une réservation</option>
             </select>
+            <select name="employeId" required>
+              <option value="">👨‍💼 Choisir un employé</option>
+            </select>
           </div>
-          <div id="reservationDetails" style="background: #f0f9ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 1rem; margin: 1rem 0; display: none;">
-            <p style="margin: 0; color: #1f2937; font-size: 0.9rem;"><strong>Détails de la réservation:</strong></p>
-            <p id="reservationDetailText" style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.85rem;"></p>
-          </div>
-        </div>
-        <div class="form-row">
-          <select name="employeId" required>
-            <option value="">👨‍💼 Choisir un employé</option>
-          </select>
-        </div>
-        <button type="submit" class="btn-primary">✅ Créer la location</button>
-      </form>
-    </section>
+          <button type="submit" class="btn-primary">✅ Convertir la réservation</button>
+        </form>
+      </section>
+    </div>
 
-    <section class="card">
-      <h2>📋 Réservations disponibles</h2>
-      <p>Voici les réservations actives qui peuvent être converties en locations.</p>
-      <div id="reservationsList" style="background: #f9fafb; border-radius: 12px; padding: 1.5rem;">
-        <p style="text-align: center; color: #999; font-size: 0.9rem;">⏳ Chargement des réservations...</p>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>🔄 Convertir une réservation</h2>
-      <p>Convertissez rapidement une réservation existante en location avec check-in.</p>
-      <form id="convertForm">
-        <div class="form-row">
-          <select name="reservationId" required>
-            <option value="">📋 Choisir une réservation</option>
-          </select>
-          <select name="employeId" required>
-            <option value="">👨‍💼 Choisir un employé</option>
-          </select>
+    <div id="reservations" class="tab-content">
+      <div class="message" style="display: none;"></div>
+      <section class="card">
+        <h2>📋 Réservations actuelles</h2>
+        <p>Consultez toutes les réservations actives du système avec les détails de chaque réservation.</p>
+        <div id="currentReservationsContainer" style="margin-top: 1.5rem;">
+          <p style="text-align: center; color: #999; font-size: 0.9rem;">⏳ Chargement des réservations...</p>
         </div>
-        <button type="submit" class="btn-primary">✅ Convertir la réservation</button>
-      </form>
-    </section>
+      </section>
     </div>
 
     <div id="data" class="tab-content">
-    <div class="message" style="display: none;"></div>
-    <section class="card">
-      <h2>📊 Données du système</h2>
-      <p>Consultez toutes les informations du système : clients, employés, hôtels, chambres, réservations et locations.</p>
-      <button id="loadDataBtn" class="btn-primary">📥 Charger toutes les données</button>
-      <div id="dataContainer"></div>
-    </section>
+      <div class="message" style="display: none;"></div>
+      <section class="card">
+        <h2>📊 Données du système</h2>
+        <p>Consultez toutes les informations du système : clients, employés, hôtels, chambres, réservations et
+          locations.</p>
+        <button id="loadDataBtn" class="btn-primary">📥 Charger toutes les données</button>
+        <div id="dataContainer"></div>
+      </section>
     </div>
 
     <div id="archive" class="tab-content">
-    <div class="message" style="display: none;"></div>
-    <section class="card">
-      <h2>🗂️ Archiver les réservations et locations</h2>
-      <p>Archivez les réservations et locations terminées ou annulées. Les données archivées ne seront plus affichées dans les listings actifs.</p>
-      <div class="form-row">
-        <select id="archiveReservationSelect">
-          <option value="">📋 Choisir une réservation</option>
-        </select>
-        <button id="archiveReservationBtn" class="btn-primary">📦 Archiver la réservation</button>
-      </div>
-      <div class="form-row">
-        <select id="archiveLocationSelect">
-          <option value="">🔑 Choisir une location</option>
-        </select>
-        <button id="archiveLocationBtn" class="btn-primary">📦 Archiver la location</button>
-      </div>
-    </section>
+      <div class="message" style="display: none;"></div>
+      <section class="card">
+        <h2>🗂️ Archiver les réservations et locations</h2>
+        <p>Archivez les réservations et locations terminées ou annulées. Les données archivées ne seront plus affichées
+          dans les listings actifs.</p>
+        <div class="form-row">
+          <select id="archiveReservationSelect">
+            <option value="">📋 Choisir une réservation</option>
+          </select>
+          <button id="archiveReservationBtn" class="btn-primary">📦 Archiver la réservation</button>
+        </div>
+        <div class="form-row">
+          <select id="archiveLocationSelect">
+            <option value="">🔑 Choisir une location</option>
+          </select>
+          <button id="archiveLocationBtn" class="btn-primary">📦 Archiver la location</button>
+        </div>
+      </section>
     </div>
   </main>
 
   <script src="/app.js"></script>
 </body>
+
 </html>
