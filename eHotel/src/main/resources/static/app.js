@@ -84,14 +84,14 @@ document.addEventListener('DOMContentLoaded', loadData);
 
 document.getElementById('loadDataBtn').addEventListener('click', async () => {
   const dataDiv = document.getElementById('dataContainer');
-  dataDiv.innerHTML = '<p>Chargement...</p>';
+  dataDiv.innerHTML = '<div style="text-align: center; padding: 2rem;"><p style="color: #667eea; font-size: 1.1rem; font-weight: 600;">⏳ Chargement des données...</p></div>';
 
   const endpoints = [
-    { name: 'Clients', url: '/api/clients', headers: ['ID', 'Nom complet'] },
-    { name: 'Employés', url: '/api/employees', headers: ['ID', 'Nom complet'] },
-    { name: 'Hôtels', url: '/api/hotels', headers: ['ID', 'Nom'] },
-    { name: 'Chambres', url: '/api/allrooms', headers: ['ID', 'Numéro'] },
-    { name: 'Réservations', url: '/api/reservations', headers: ['Détails'] }
+    { name: '👥 Clients', url: '/api/clients', headers: ['ID', 'Nom complet'], icon: '👤' },
+    { name: '👨‍💼 Employés', url: '/api/employees', headers: ['ID', 'Nom complet'], icon: '👨‍💼' },
+    { name: '🏨 Hôtels', url: '/api/hotels', headers: ['ID', 'Nom'], icon: '🏨' },
+    { name: '🛏️ Chambres', url: '/api/allrooms', headers: ['ID', 'Numéro'], icon: '🛏️' },
+    { name: '📅 Réservations', url: '/api/reservations', headers: ['Détails'], icon: '📅' }
   ];
 
   dataDiv.innerHTML = '';
@@ -99,12 +99,16 @@ document.getElementById('loadDataBtn').addEventListener('click', async () => {
   for (const ep of endpoints) {
     try {
       const response = await fetch(ep.url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const items = await response.json();
+      
       const section = document.createElement('div');
       section.className = 'data-section';
       section.innerHTML = `<h3>${ep.name}</h3>`;
+      
       const table = document.createElement('table');
       table.className = 'data-table';
+      
       const thead = document.createElement('thead');
       const headerRow = document.createElement('tr');
       ep.headers.forEach(h => {
@@ -114,30 +118,51 @@ document.getElementById('loadDataBtn').addEventListener('click', async () => {
       });
       thead.appendChild(headerRow);
       table.appendChild(thead);
+      
       const tbody = document.createElement('tbody');
-      items.forEach(item => {
-        const row = document.createElement('tr');
-        if (ep.name === 'Réservations') {
-          const td = document.createElement('td');
-          td.textContent = item;
-          row.appendChild(td);
-        } else {
-          const [id, name] = item.split(': ', 2);
-          const td1 = document.createElement('td');
-          td1.textContent = id;
-          const td2 = document.createElement('td');
-          td2.textContent = name || item;
-          row.appendChild(td1);
-          row.appendChild(td2);
-        }
-        tbody.appendChild(row);
-      });
+      if (items.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = ep.headers.length;
+        td.style.textAlign = 'center';
+        td.style.color = '#999';
+        td.textContent = 'Aucune donnée disponible';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      } else {
+        items.forEach((item, idx) => {
+          const row = document.createElement('tr');
+          if (ep.name.includes('Réservations')) {
+            const td = document.createElement('td');
+            td.textContent = item;
+            row.appendChild(td);
+          } else {
+            const [id, name] = item.split(': ', 2);
+            const td1 = document.createElement('td');
+            td1.textContent = id;
+            td1.style.fontWeight = '600';
+            td1.style.color = '#667eea';
+            const td2 = document.createElement('td');
+            td2.textContent = name || item;
+            row.appendChild(td1);
+            row.appendChild(td2);
+          }
+          tbody.appendChild(row);
+        });
+      }
+      
       table.appendChild(tbody);
       section.appendChild(table);
       dataDiv.appendChild(section);
     } catch (e) {
       console.error(e);
-      dataDiv.innerHTML += `<p>Erreur lors du chargement de ${ep.name}</p>`;
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'data-section';
+      errorDiv.innerHTML = `<h3>${ep.name}</h3><p style="color: #e74c3c; font-weight: 500;">❌ Erreur lors du chargement</p>`;
+      dataDiv.appendChild(errorDiv);
+    }
+  }
+});
     }
   }
 });
@@ -146,43 +171,84 @@ searchForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const params = new URLSearchParams(new FormData(searchForm));
-  const response = await fetch('/api/rooms?' + params.toString());
-  const rooms = await response.json();
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '<p style="text-align: center; color: #667eea; font-weight: 600;">⏳ Recherche en cours...</p>';
+  
+  try {
+    const response = await fetch('/api/rooms?' + params.toString());
+    const rooms = await response.json();
 
-  results.innerHTML = '';
+    resultsDiv.innerHTML = '';
 
-  if (!rooms.length) {
-    results.innerHTML = '<p>Aucune chambre trouvée.</p>';
-    return;
+    if (!rooms.length) {
+      resultsDiv.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem;">😞 Aucune chambre ne correspond à vos critères.</p>';
+      return;
+    }
+
+    const title = document.createElement('h3');
+    title.textContent = `✅ ${rooms.length} chambre(s) trouvée(s)`;
+    resultsDiv.appendChild(title);
+
+    rooms.forEach((room, idx) => {
+      const div = document.createElement('div');
+      div.className = 'room';
+      const stars = '⭐'.repeat(3); // Default placeholder
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+          <div>
+            <strong style="font-size: 1.1rem;">🏢 ${room.hotel}</strong><br>
+            <small style="color: #666;">📍 ${room.zone}</small>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 1.5rem; color: #667eea; font-weight: 700;">$${room.prix}</div>
+            <small style="color: #666;">/nuit</small>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem;">
+          <div>
+            <span style="color: #667eea; font-weight: 600;">🛏️ Numéro:</span> ${room.numero}
+          </div>
+          <div>
+            <span style="color: #667eea; font-weight: 600;">👥 Capacité:</span> ${room.capacite} pers.
+          </div>
+          <div>
+            <span style="color: #667eea; font-weight: 600;">📐 Superficie:</span> ${room.superficie} m²
+          </div>
+          <div>
+            <span style="color: #667eea; font-weight: 600;">🆔 ID:</span> ${room.chambreId}
+          </div>
+        </div>
+      `;
+      resultsDiv.appendChild(div);
+    });
+  } catch (e) {
+    console.error(e);
+    resultsDiv.innerHTML = '<p style="text-align: center; color: #e74c3c; font-weight: 500;">❌ Erreur lors de la recherche</p>';
   }
-
-  rooms.forEach(room => {
-    const div = document.createElement('div');
-    div.className = 'room';
-    div.innerHTML = `
-      <strong>${room.hotel}</strong><br>
-      Zone: ${room.zone}<br>
-      Chambre ID: ${room.chambreId}<br>
-      Numéro: ${room.numero}<br>
-      Prix: ${room.prix}$<br>
-      Capacité: ${room.capacite}<br>
-      Superficie: ${room.superficie} m²
-    `;
-    results.appendChild(div);
-  });
 });
 
 reservationForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const body = new URLSearchParams(new FormData(reservationForm));
-  const response = await fetch('/api/reservations', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body
-  });
+  try {
+    const response = await fetch('/api/reservations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    });
 
-  showMessage(await response.text());
+    const message = await response.text();
+    if (response.ok) {
+      showMessage('✅ ' + message);
+      reservationForm.reset();
+    } else {
+      showMessage('❌ ' + message);
+    }
+    loadData();
+  } catch (e) {
+    showMessage('❌ Erreur: ' + e.message);
+  }
 });
 
 locationForm.addEventListener('submit', async (e) => {
@@ -195,44 +261,88 @@ locationForm.addEventListener('submit', async (e) => {
     url = '/api/convert';
   }
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body
-  });
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    });
 
-  showMessage(await response.text());
+    const message = await response.text();
+    if (response.ok) {
+      showMessage('✅ ' + message);
+      locationForm.reset();
+    } else {
+      showMessage('❌ ' + message);
+    }
+    loadData();
+  } catch (e) {
+    showMessage('❌ Erreur: ' + e.message);
+  }
 });
 
 convertForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const body = new URLSearchParams(new FormData(convertForm));
-  const response = await fetch('/api/convert', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body
-  });
+  try {
+    const response = await fetch('/api/convert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    });
 
-  showMessage(await response.text());
-  // Reload data
-  loadData();
+    const message = await response.text();
+    if (response.ok) {
+      showMessage('✅ ' + message);
+      convertForm.reset();
+    } else {
+      showMessage('❌ ' + message);
+    }
+    loadData();
+  } catch (e) {
+    showMessage('❌ Erreur: ' + e.message);
+  }
 });
 
 document.getElementById('archiveReservationBtn').addEventListener('click', async () => {
   const id = document.getElementById('archiveReservationSelect').value;
-  if (!id) return;
-  const response = await fetch(`/api/archive/reservation/${id}`, { method: 'POST' });
-  showMessage(await response.text());
-  loadData();
+  if (!id) {
+    showMessage('⚠️ Veuillez choisir une réservation');
+    return;
+  }
+  try {
+    const response = await fetch(`/api/archive/reservation/${id}`, { method: 'POST' });
+    const message = await response.text();
+    if (response.ok) {
+      showMessage('✅ ' + message);
+    } else {
+      showMessage('❌ ' + message);
+    }
+    loadData();
+  } catch (e) {
+    showMessage('❌ Erreur: ' + e.message);
+  }
 });
 
 document.getElementById('archiveLocationBtn').addEventListener('click', async () => {
   const id = document.getElementById('archiveLocationSelect').value;
-  if (!id) return;
-  const response = await fetch(`/api/archive/location/${id}`, { method: 'POST' });
-  showMessage(await response.text());
-  loadData();
+  if (!id) {
+    showMessage('⚠️ Veuillez choisir une location');
+    return;
+  }
+  try {
+    const response = await fetch(`/api/archive/location/${id}`, { method: 'POST' });
+    const message = await response.text();
+    if (response.ok) {
+      showMessage('✅ ' + message);
+    } else {
+      showMessage('❌ ' + message);
+    }
+    loadData();
+  } catch (e) {
+    showMessage('❌ Erreur: ' + e.message);
+  }
 });
 
 document.addEventListener('DOMContentLoaded', () => {

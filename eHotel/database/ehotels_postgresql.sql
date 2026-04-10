@@ -169,131 +169,137 @@ JOIN chambre c ON c.hotel_id = h.hotel_id
 GROUP BY h.hotel_id, h.nom;
 
 INSERT INTO chaine_hotel (nom, adresse_siege, nb_hotels) VALUES
-('Northern Lights Hotels', 'Ottawa, Ontario, Canada', 8),
-('Maple Crown Resorts', 'Toronto, Ontario, Canada', 8),
-('Atlantic Breeze Inns', 'Halifax, Nova Scotia, Canada', 8),
-('Pacific Peak Suites', 'Vancouver, British Columbia, Canada', 8),
-('Continental Stay Group', 'Montreal, Quebec, Canada', 8);
+('Northern Lights Hotels', 'Ottawa, Ontario, Canada', 0),
+('Maple Crown Resorts', 'Toronto, Ontario, Canada', 0),
+('Atlantic Breeze Inns', 'Halifax, Nova Scotia, Canada', 0),
+('Pacific Peak Suites', 'Vancouver, British Columbia, Canada', 0),
+('Continental Stay Group', 'Montreal, Quebec, Canada', 0),
+('Global Luxury Hotels', 'New York, USA', 0),
+('European Hospitality', 'London, UK', 0),
+('Asian Traveler', 'Tokyo, Japan', 0);
 
 INSERT INTO chaine_email (chaine_id, email) VALUES
 (1, 'contact@northernlights.ca'),
 (2, 'contact@maplecrown.ca'),
 (3, 'contact@atlanticbreeze.ca'),
 (4, 'contact@pacificpeak.ca'),
-(5, 'contact@continentalstay.ca');
+(5, 'contact@continentalstay.ca'),
+(6, 'reservations@globalluxury.com'),
+(7, 'info@europeanhosp.co.uk'),
+(8, 'bookings@asianhotel.jp');
 
 INSERT INTO chaine_telephone (chaine_id, telephone) VALUES
-(1, '613-555-1001'),
-(2, '416-555-1002'),
-(3, '902-555-1003'),
-(4, '604-555-1004'),
-(5, '514-555-1005');
+(1, '1-613-555-1001'),
+(2, '1-416-555-1002'),
+(3, '1-902-555-1003'),
+(4, '1-604-555-1004'),
+(5, '1-514-555-1005'),
+(6, '1-212-555-1006'),
+(7, '+44-207-555-1007'),
+(8, '+81-3-555-1008');
 
 INSERT INTO hotel (chaine_id, nom, categorie, adresse, zone, nb_chambres, email_contact, telephone_contact) VALUES
-(1, 'NL Ottawa Downtown', 5, '100 Wellington St, Ottawa', 'Ottawa Centre', 5, 'ottawa@northernlights.ca', '613-555-2001'),
-(1, 'NL Ottawa Airport', 4, '200 Airport Rd, Ottawa', 'Ottawa South', 5, 'airport@northernlights.ca', '613-555-2002'),
-(1, 'NL Montreal Central', 4, '300 Rue Sainte-Catherine, Montreal', 'Montreal Centre', 5, 'montreal@northernlights.ca', '514-555-2003'),
-(1, 'NL Toronto Union', 5, '10 Front St, Toronto', 'Toronto Centre', 5, 'toronto@northernlights.ca', '416-555-2004'),
-(1, 'NL Quebec Vieux-Port', 3, '25 Rue du Port, Quebec City', 'Quebec Centre', 5, 'quebec@northernlights.ca', '418-555-2005'),
-(1, 'NL Halifax Harbour', 4, '50 Harbour Rd, Halifax', 'Halifax Waterfront', 5, 'halifax@northernlights.ca', '902-555-2006'),
-(1, 'NL Calgary West', 3, '75 Bow Tr, Calgary', 'Calgary West', 5, 'calgary@northernlights.ca', '403-555-2007'),
-(1, 'NL Vancouver Bay', 5, '99 Bay Ave, Vancouver', 'Vancouver Bay', 5, 'vancouver@northernlights.ca', '604-555-2008'),
+(1, 'NL Ottawa Downtown', 5, '100 Wellington St, Ottawa, ON', 'Ottawa Centre', 25, 'ottawa@northernlights.ca', '613-555-2001'),
+(1, 'NL Toronto Union', 5, '10 Front St, Toronto, ON', 'Toronto Centre', 30, 'toronto@northernlights.ca', '416-555-2004'),
+(1, 'NL Montreal Central', 4, '300 Rue Sainte-Catherine, Montreal, QC', 'Montreal Centre', 20, 'montreal@northernlights.ca', '514-555-2003'),
+(1, 'NL Vancouver Bay', 5, '99 Bay Ave, Vancouver, BC', 'Vancouver Bay', 28, 'vancouver@northernlights.ca', '604-555-2008'),
+(2, 'MC Toronto Lakeshore', 5, '88 Lake Shore Blvd, Toronto, ON', 'Toronto Waterfront', 32, 'lakeshore@maplecrown.ca', '416-555-2104'),
+(2, 'MC Ottawa Central', 4, '110 Elgin St, Ottawa, ON', 'Ottawa Centre', 22, 'ottawa@maplecrown.ca', '613-555-2101'),
+(3, 'AB Halifax Central', 5, '11 Spring Garden Rd, Halifax, NS', 'Halifax Centre', 24, 'halifax@atlanticbreeze.ca', '902-555-2201'),
+(3, 'AB St Johns Port', 4, '30 Port Ave, St Johns, NL', 'St Johns Port', 18, 'stjohns@atlanticbreeze.ca', '709-555-2205'),
+(4, 'PP Vancouver Central', 5, '60 Granville St, Vancouver, BC', 'Vancouver Centre', 26, 'van@pacificpeak.ca', '604-555-2301'),
+(4, 'PP Whistler Alpine', 5, '78 Alpine Rd, Whistler, BC', 'Whistler Alpine', 20, 'whistler@pacificpeak.ca', '604-555-2307'),
+(5, 'CS Montreal Downtown', 5, '90 Rene-Levesque Blvd, Montreal, QC', 'Montreal Centre', 28, 'montreal@continentalstay.ca', '514-555-2401'),
+(5, 'CS Quebec Palace', 5, '100 Grande Allee, Quebec City, QC', 'Quebec Centre', 25, 'quebec@continentalstay.ca', '418-555-2406'),
+(6, 'GL New York Times Square', 5, '1500 Broadway, New York, NY', 'Times Square', 35, 'newyork@globalluxury.com', '212-555-3001'),
+(6, 'GL Los Angeles Sunset', 5, '5000 Sunset Blvd, Los Angeles, CA', 'Los Angeles', 30, 'losangeles@globalluxury.com', '213-555-3002'),
+(7, 'EH London Piccadilly', 5, '100 Piccadilly, London, UK', 'London Centre', 40, 'london@europeanhosp.co.uk', '207-555-4001'),
+(7, 'EH Paris Champs', 5, '50 Avenue des Champs-Élysées, Paris, France', 'Paris Centre', 36, 'paris@europeanhosp.co.uk', '147-555-4002'),
+(8, 'AT Tokyo Shibuya', 5, '1 Shibuya Crossing, Tokyo, Japan', 'Shibuya', 32, 'tokyo@asianhotel.jp', '335-555-5001'),
+(8, 'AT Bangkok Royal', 4, '150 Rajadamri Road, Bangkok, Thailand', 'Bangkok Centre', 28, 'bangkok@asianhotel.jp', '226-555-5002');
 
-(2, 'MC Ottawa Central', 4, '110 Elgin St, Ottawa', 'Ottawa Centre', 5, 'ottawa@maplecrown.ca', '613-555-2101'),
-(2, 'MC Ottawa East', 3, '250 Montreal Rd, Ottawa', 'Ottawa East', 5, 'east@maplecrown.ca', '613-555-2102'),
-(2, 'MC Toronto Midtown', 4, '500 Yonge St, Toronto', 'Toronto Midtown', 5, 'midtown@maplecrown.ca', '416-555-2103'),
-(2, 'MC Toronto Lakeshore', 5, '88 Lake Shore Blvd, Toronto', 'Toronto Waterfront', 5, 'lakeshore@maplecrown.ca', '416-555-2104'),
-(2, 'MC Kingston Riverside', 3, '12 River Rd, Kingston', 'Kingston Riverside', 5, 'kingston@maplecrown.ca', '613-555-2105'),
-(2, 'MC London North', 3, '15 North Ave, London', 'London North', 5, 'london@maplecrown.ca', '519-555-2106'),
-(2, 'MC Windsor Hub', 4, '18 Hub St, Windsor', 'Windsor Centre', 5, 'windsor@maplecrown.ca', '519-555-2107'),
-(2, 'MC Sudbury Grand', 4, '20 Grand Ave, Sudbury', 'Sudbury Centre', 5, 'sudbury@maplecrown.ca', '705-555-2108'),
+INSERT INTO employe (hotel_id, nom_complet, adresse, nas, role_hotel, email, telephone) VALUES
+(1, 'Jean Dupont', '100 Wellington St, Ottawa, ON', 'EMP000001', 'Gestionnaire', 'jean.dupont@northernlights.ca', '613-555-6001'),
+(1, 'Marie Claire', '100 Wellington St, Ottawa, ON', 'EMP000002', 'Réceptionniste', 'marie@northernlights.ca', '613-555-6002'),
+(2, 'Michael Johnson', '10 Front St, Toronto, ON', 'EMP000003', 'Gestionnaire', 'michael@northernlights.ca', '416-555-6003'),
+(2, 'Sarah Wilson', '10 Front St, Toronto, ON', 'EMP000004', 'Réceptionniste', 'sarah@northernlights.ca', '416-555-6004'),
+(3, 'Pierre Martin', '300 Rue Sainte-Catherine, Montreal, QC', 'EMP000005', 'Gestionnaire', 'pierre@northernlights.ca', '514-555-6005'),
+(4, 'Lisa Wong', '99 Bay Ave, Vancouver, BC', 'EMP000006', 'Gestionnaire', 'lisa@northernlights.ca', '604-555-6006'),
+(5, 'David Chen', '88 Lake Shore Blvd, Toronto, ON', 'EMP000007', 'Gestionnaire', 'david@maplecrown.ca', '416-555-6007'),
+(5, 'Emma Taylor', '88 Lake Shore Blvd, Toronto, ON', 'EMP000008', 'Réceptionniste', 'emma@maplecrown.ca', '416-555-6008'),
+(6, 'Robert Brown', '110 Elgin St, Ottawa, ON', 'EMP000009', 'Gestionnaire', 'robert@maplecrown.ca', '613-555-6009'),
+(7, 'Catherine Roy', '11 Spring Garden Rd, Halifax, NS', 'EMP000010', 'Gestionnaire', 'catherine@atlanticbreeze.ca', '902-555-6010'),
+(7, 'Thomas Moore', '11 Spring Garden Rd, Halifax, NS', 'EMP000011', 'Réceptionniste', 'thomas@atlanticbreeze.ca', '902-555-6011'),
+(8, 'Sophie Adams', '30 Port Ave, St Johns, NL', 'EMP000012', 'Gestionnaire', 'sophie@atlanticbreeze.ca', '709-555-6012'),
+(9, 'James White', '60 Granville St, Vancouver, BC', 'EMP000013', 'Gestionnaire', 'james@pacificpeak.ca', '604-555-6013'),
+(10, 'Julia Garcia', '78 Alpine Rd, Whistler, BC', 'EMP000014', 'Gestionnaire', 'julia@pacificpeak.ca', '604-555-6014'),
+(11, 'Marc Leblanc', '90 Rene-Levesque Blvd, Montreal, QC', 'EMP000015', 'Gestionnaire', 'marc@continentalstay.ca', '514-555-6015'),
+(12, 'Nicole Gagnon', '100 Grande Allee, Quebec City, QC', 'EMP000016', 'Gestionnaire', 'nicole@continentalstay.ca', '418-555-6016'),
+(13, 'William Smith', '1500 Broadway, New York, NY', 'EMP000017', 'Gestionnaire', 'william@globalluxury.com', '212-555-6017'),
+(14, 'Patricia Davis', '5000 Sunset Blvd, Los Angeles, CA', 'EMP000018', 'Gestionnaire', 'patricia@globalluxury.com', '213-555-6018'),
+(15, 'Nicholas Hunter', '100 Piccadilly, London, UK', 'EMP000019', 'Gestionnaire', 'nicholas@europeanhosp.co.uk', '207-555-6019'),
+(16, 'Elizabeth Turner', '50 Avenue des Champs-Élysées, Paris, France', 'EMP000020', 'Gestionnaire', 'elizabeth@europeanhosp.co.uk', '147-555-6020'),
+(17, 'Kevin Nakamura', '1 Shibuya Crossing, Tokyo, Japan', 'EMP000021', 'Gestionnaire', 'kevin@asianhotel.jp', '335-555-6021'),
+(18, 'Angela Suwadi', '150 Rajadamri Road, Bangkok, Thailand', 'EMP000022', 'Gestionnaire', 'angela@asianhotel.jp', '226-555-6022');
 
-(3, 'AB Halifax Central', 5, '11 Spring Garden Rd, Halifax', 'Halifax Centre', 5, 'halifax@atlanticbreeze.ca', '902-555-2201'),
-(3, 'AB Halifax Harbour', 4, '13 Dockside Ln, Halifax', 'Halifax Waterfront', 5, 'harbour@atlanticbreeze.ca', '902-555-2202'),
-(3, 'AB Moncton East', 3, '55 Main St, Moncton', 'Moncton East', 5, 'moncton@atlanticbreeze.ca', '506-555-2203'),
-(3, 'AB Fredericton River', 3, '22 Riverfront Rd, Fredericton', 'Fredericton River', 5, 'fred@atlanticbreeze.ca', '506-555-2204'),
-(3, 'AB St Johns Port', 4, '30 Port Ave, St Johns', 'St Johns Port', 5, 'stjohns@atlanticbreeze.ca', '709-555-2205'),
-(3, 'AB Charlottetown Garden', 4, '40 Garden St, Charlottetown', 'Charlottetown Garden', 5, 'charlottetown@atlanticbreeze.ca', '902-555-2206'),
-(3, 'AB Sydney Shore', 3, '44 Shore Rd, Sydney', 'Sydney Shore', 5, 'sydney@atlanticbreeze.ca', '902-555-2207'),
-(3, 'AB Dartmouth Crossing', 4, '46 Crossing Blvd, Dartmouth', 'Dartmouth Crossing', 5, 'dartmouth@atlanticbreeze.ca', '902-555-2208'),
-
-(4, 'PP Vancouver Central', 5, '60 Granville St, Vancouver', 'Vancouver Centre', 5, 'van@pacificpeak.ca', '604-555-2301'),
-(4, 'PP Vancouver Airport', 4, '61 Sea Island Way, Richmond', 'Vancouver Airport', 5, 'airport@pacificpeak.ca', '604-555-2302'),
-(4, 'PP Victoria Harbour', 4, '70 Wharf St, Victoria', 'Victoria Harbour', 5, 'victoria@pacificpeak.ca', '250-555-2303'),
-(4, 'PP Kelowna Lake', 3, '72 Lakeview Rd, Kelowna', 'Kelowna Lake', 5, 'kelowna@pacificpeak.ca', '250-555-2304'),
-(4, 'PP Surrey South', 3, '74 South Fraser Rd, Surrey', 'Surrey South', 5, 'surrey@pacificpeak.ca', '604-555-2305'),
-(4, 'PP Burnaby Heights', 4, '76 Heights Ave, Burnaby', 'Burnaby Heights', 5, 'burnaby@pacificpeak.ca', '604-555-2306'),
-(4, 'PP Whistler Alpine', 5, '78 Alpine Rd, Whistler', 'Whistler Alpine', 5, 'whistler@pacificpeak.ca', '604-555-2307'),
-(4, 'PP Nanaimo Bay', 3, '79 Bay St, Nanaimo', 'Nanaimo Bay', 5, 'nanaimo@pacificpeak.ca', '250-555-2308'),
-
-(5, 'CS Montreal Downtown', 5, '90 Rene-Levesque Blvd, Montreal', 'Montreal Centre', 5, 'montreal@continentalstay.ca', '514-555-2401'),
-(5, 'CS Montreal North', 4, '92 Ahuntsic Ave, Montreal', 'Montreal North', 5, 'north@continentalstay.ca', '514-555-2402'),
-(5, 'CS Laval Business', 3, '94 Business Park, Laval', 'Laval Business', 5, 'laval@continentalstay.ca', '450-555-2403'),
-(5, 'CS Gatineau Centre', 4, '96 Boulevard Maisonneuve, Gatineau', 'Gatineau Centre', 5, 'gatineau@continentalstay.ca', '819-555-2404'),
-(5, 'CS Sherbrooke Hills', 3, '98 Hill Rd, Sherbrooke', 'Sherbrooke Hills', 5, 'sherbrooke@continentalstay.ca', '819-555-2405'),
-(5, 'CS Quebec Palace', 5, '100 Grande Allee, Quebec City', 'Quebec Centre', 5, 'quebec@continentalstay.ca', '418-555-2406'),
-(5, 'CS Trois-Rivieres', 3, '102 River St, Trois-Rivieres', 'Trois-Rivieres', 5, 'troisrivieres@continentalstay.ca', '819-555-2407'),
-(5, 'CS Longueuil Metro', 4, '104 Metro Blvd, Longueuil', 'Longueuil Metro', 5, 'longueuil@continentalstay.ca', '450-555-2408');
-
-INSERT INTO employe (hotel_id, nom_complet, adresse, nas, role_hotel, email, telephone)
-SELECT hotel_id,
-       'Gestionnaire Hotel ' || hotel_id,
-       'Adresse employe hotel ' || hotel_id,
-       'EMP' || LPAD(hotel_id::text, 6, '0'),
-       'Gestionnaire',
-       'manager' || hotel_id || '@ehotels.ca',
-       '555-700-' || LPAD(hotel_id::text, 4, '0')
-FROM hotel;
-
-UPDATE hotel h
-SET gestionnaire_id = e.employe_id
-FROM employe e
-WHERE h.hotel_id = e.hotel_id
-  AND e.role_hotel = 'Gestionnaire';
+UPDATE hotel SET gestionnaire_id = (SELECT employe_id FROM employe WHERE hotel_id = hotel.hotel_id AND role_hotel = 'Gestionnaire' LIMIT 1) WHERE gestionnaire_id IS NULL;
 
 INSERT INTO client (nom_complet, adresse, nas, date_inscription, email, telephone) VALUES
-('Alice Tremblay', 'Ottawa, ON', 'CLI000001', CURRENT_DATE - INTERVAL '120 days', 'alice@example.com', '613-555-3001'),
-('Marc Gagnon', 'Montreal, QC', 'CLI000002', CURRENT_DATE - INTERVAL '90 days', 'marc@example.com', '514-555-3002'),
-('Sophie Roy', 'Toronto, ON', 'CLI000003', CURRENT_DATE - INTERVAL '60 days', 'sophie@example.com', '416-555-3003'),
-('David Nguyen', 'Vancouver, BC', 'CLI000004', CURRENT_DATE - INTERVAL '45 days', 'david@example.com', '604-555-3004'),
-('Emma Bouchard', 'Halifax, NS', 'CLI000005', CURRENT_DATE - INTERVAL '30 days', 'emma@example.com', '902-555-3005');
+('Alice Tremblay', '123 Elm St, Ottawa, ON', 'CLI0001', CURRENT_DATE - INTERVAL '120 days', 'alice@example.com', '613-555-7001'),
+('Marc Gagnon', '456 Oak Ave, Montreal, QC', 'CLI0002', CURRENT_DATE - INTERVAL '90 days', 'marc@example.com', '514-555-7002'),
+('Sophie Roy', '789 Maple Rd, Toronto, ON', 'CLI0003', CURRENT_DATE - INTERVAL '60 days', 'sophie@example.com', '416-555-7003'),
+('David Nguyen', '100 Pine St, Vancouver, BC', 'CLI0004', CURRENT_DATE - INTERVAL '45 days', 'david@example.com', '604-555-7004'),
+('Emma Bouchard', '234 Cedar Ln, Halifax, NS', 'CLI0005', CURRENT_DATE - INTERVAL '30 days', 'emma@example.com', '902-555-7005'),
+('Michael Brown', '567 Birch Way, New York, NY', 'CLI0006', CURRENT_DATE - INTERVAL '20 days', 'michael@example.com', '212-555-7006'),
+('Jennifer Davis', '890 Ash Court, Los Angeles, CA', 'CLI0007', CURRENT_DATE - INTERVAL '15 days', 'jennifer@example.com', '213-555-7007'),
+('Robert Johnson', '111 Oak Hill, London, UK', 'CLI0008', CURRENT_DATE - INTERVAL '10 days', 'robert@example.com', '207-555-7008'),
+('Catherine Martin', '222 Chestnut Ave, Paris, France', 'CLI0009', CURRENT_DATE - INTERVAL '5 days', 'catherine@example.com', '147-555-7009'),
+('James Wong', '333 Willow St, Tokyo, Japan', 'CLI0010', CURRENT_DATE, 'james@example.com', '335-555-7010');
 
-INSERT INTO chambre (hotel_id, numero, prix, commodites, capacite, vue, lit_suppl, etat, superficie, statut)
-SELECT h.hotel_id,
-       '10' || g.n,
-       CASE g.n WHEN 1 THEN 119.99 WHEN 2 THEN 149.99 WHEN 3 THEN 179.99 WHEN 4 THEN 219.99 ELSE 279.99 END,
-       CASE g.n WHEN 1 THEN 'WiFi, TV'
-                WHEN 2 THEN 'WiFi, TV, Climatisation'
-                WHEN 3 THEN 'WiFi, TV, Mini-bar'
-                WHEN 4 THEN 'WiFi, TV, Climatisation, Bureau'
-                ELSE 'WiFi, TV, Climatisation, Mini-bar, Bureau'
-       END,
-       CASE g.n WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN 2 WHEN 4 THEN 3 ELSE 4 END,
-       CASE g.n WHEN 1 THEN 'ville' WHEN 2 THEN 'cour' WHEN 3 THEN 'ville' WHEN 4 THEN 'rivière' ELSE 'mer' END,
-       CASE WHEN g.n IN (3,4,5) THEN TRUE ELSE FALSE END,
-       'bon état',
-       CASE g.n WHEN 1 THEN 18 WHEN 2 THEN 22 WHEN 3 THEN 28 WHEN 4 THEN 35 ELSE 42 END,
-       'disponible'
-FROM hotel h
-CROSS JOIN generate_series(1,5) AS g(n);
-
-UPDATE hotel h
-SET nb_chambres = x.cnt
-FROM (
-  SELECT hotel_id, COUNT(*) AS cnt
-  FROM chambre
-  GROUP BY hotel_id
-) x
-WHERE x.hotel_id = h.hotel_id;
+INSERT INTO chambre (hotel_id, numero, prix, commodites, capacite, vue, lit_suppl, etat, superficie, statut) VALUES
+(1, '101', 159.99, 'WiFi, TV, Salle de bain luxe', 1, 'ville', FALSE, 'bon état', 20, 'disponible'),
+(1, '102', 199.99, 'WiFi, TV, Climatisation, Salle de bain luxe', 2, 'ville', FALSE, 'bon état', 28, 'disponible'),
+(1, '103', 249.99, 'WiFi, TV, Mini-bar, Balcon', 2, 'ville', TRUE, 'bon état', 32, 'disponible'),
+(1, '201', 199.99, 'WiFi, TV, Bureau', 1, 'cour', FALSE, 'bon état', 22, 'disponible'),
+(1, '202', 279.99, 'WiFi, TV, Bureau, Mini-bar, Jacuzzi', 2, 'rivière', TRUE, 'bon état', 38, 'disponible'),
+(2, '301', 179.99, 'WiFi, TV, Salle de bain moderne', 1, 'ville', FALSE, 'bon état', 21, 'disponible'),
+(2, '302', 229.99, 'WiFi, TV, Climatisation, Balcon', 2, 'lac', FALSE, 'bon état', 29, 'disponible'),
+(2, '303', 289.99, 'WiFi, TV, Studio complet, Kitchenette', 2, 'lac', TRUE, 'bon état', 42, 'disponible'),
+(3, '401', 139.99, 'WiFi, TV', 1, 'terrasse', FALSE, 'bon état', 18, 'disponible'),
+(3, '402', 189.99, 'WiFi, TV, Climatisation', 2, 'montagne', FALSE, 'bon état', 26, 'disponible'),
+(4, '501', 329.99, 'WiFi, TV, Suite exécutive, Salon', 2, 'baie', TRUE, 'bon état', 55, 'disponible'),
+(4, '502', 279.99, 'WiFi, TV, Balcon vue mer', 2, 'baie', FALSE, 'bon état', 38, 'disponible'),
+(5, '601', 249.99, 'WiFi, TV, Bureau', 1, 'lac', FALSE, 'bon état', 25, 'disponible'),
+(5, '602', 319.99, 'WiFi, TV, Suite, Salon', 2, 'lac', TRUE, 'bon état', 48, 'disponible'),
+(6, '701', 149.99, 'WiFi, TV, Climatisation', 1, 'rue', FALSE, 'bon état', 20, 'disponible'),
+(7, '801', 199.99, 'WiFi, TV, Balcon', 1, 'port', FALSE, 'bon état', 24, 'disponible'),
+(8, '901', 169.99, 'WiFi, TV, Vue port', 2, 'port', FALSE, 'bon état', 28, 'disponible'),
+(9, '1001', 209.99, 'WiFi, TV, Bureau', 1, 'ruelle', FALSE, 'bon état', 22, 'disponible'),
+(10, '1101', 279.99, 'WiFi, TV, Cheminée, Balcon montagne', 2, 'montagne', TRUE, 'bon état', 40, 'disponible'),
+(11, '1201', 199.99, 'WiFi, TV, Climatisation', 1, 'ville', FALSE, 'bon état', 23, 'disponible'),
+(12, '1301', 229.99, 'WiFi, TV, Balcon panoramique', 2, 'fleuve', FALSE, 'bon état', 31, 'disponible'),
+(13, '1401', 349.99, 'WiFi, TV, Suite Times Square, Spa', 2, 'times square', TRUE, 'bon état', 60, 'disponible'),
+(14, '1501', 329.99, 'WiFi, TV, Suite Hollywood, Terrasse', 2, 'hollywood', TRUE, 'bon état', 58, 'disponible'),
+(15, '1601', 389.99, 'WiFi, TV, Royal Suite, Service conciergerie', 2, 'piccadilly', TRUE, 'bon état', 70, 'disponible'),
+(16, '1701', 399.99, 'WiFi, TV, Penthouse, Vue Eiffel', 2, 'champs elysees', TRUE, 'bon état', 75, 'disponible'),
+(17, '1801', 319.99, 'WiFi, TV, Vue Shibuya Crossing', 2, 'shibuya', FALSE, 'bon état', 45, 'disponible'),
+(18, '1901', 279.99, 'WiFi, TV, Vue Chao Phraya River', 2, 'riverside', FALSE, 'bon état', 42, 'disponible');
 
 INSERT INTO reservation (client_id, chambre_id, date_debut, date_fin, date_reservation, statut) VALUES
-(1, 1, CURRENT_DATE + 5, CURRENT_DATE + 8, CURRENT_DATE, 'active'),
-(2, 6, CURRENT_DATE + 10, CURRENT_DATE + 13, CURRENT_DATE, 'active'),
-(3, 11, CURRENT_DATE + 3, CURRENT_DATE + 5, CURRENT_DATE, 'active'),
-(4, 16, CURRENT_DATE + 14, CURRENT_DATE + 18, CURRENT_DATE, 'active');
+(1, 1, CURRENT_DATE + 5, CURRENT_DATE + 8, CURRENT_DATE - INTERVAL '2 days', 'active'),
+(2, 7, CURRENT_DATE + 10, CURRENT_DATE + 15, CURRENT_DATE - INTERVAL '1 day', 'active'),
+(3, 9, CURRENT_DATE + 3, CURRENT_DATE + 6, CURRENT_DATE, 'active'),
+(4, 11, CURRENT_DATE + 14, CURRENT_DATE + 18, CURRENT_DATE, 'active'),
+(5, 13, CURRENT_DATE + 20, CURRENT_DATE + 25, CURRENT_DATE, 'active'),
+(6, 15, CURRENT_DATE + 7, CURRENT_DATE + 10, CURRENT_DATE, 'active'),
+(7, 17, CURRENT_DATE + 12, CURRENT_DATE + 16, CURRENT_DATE, 'active'),
+(8, 19, CURRENT_DATE + 8, CURRENT_DATE + 11, CURRENT_DATE, 'active');
 
 INSERT INTO location (client_id, chambre_id, reservation_id, employe_id, date_debut, date_fin, date_checkin, type_location, statut) VALUES
-(5, 2, NULL, 1, CURRENT_DATE, CURRENT_DATE + 2, CURRENT_DATE, 'directe', 'active');
+(9, 3, NULL, 2, CURRENT_DATE, CURRENT_DATE + 3, CURRENT_DATE, 'directe', 'active'),
+(10, 5, NULL, 4, CURRENT_DATE - INTERVAL '1 day', CURRENT_DATE + 2, CURRENT_DATE - INTERVAL '1 day', 'directe', 'active');
+
+UPDATE hotel h SET nb_chambres = (SELECT COUNT(*) FROM chambre c WHERE c.hotel_id = h.hotel_id);
 
 SELECT h.zone, h.nom AS hotel, c.numero, c.prix, c.capacite, c.superficie
 FROM chambre c
