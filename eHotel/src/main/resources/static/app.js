@@ -75,7 +75,7 @@ locationForm.querySelectorAll('[name=type]').forEach(radio => {
 document.addEventListener('DOMContentLoaded', loadData);
 
 document.getElementById('loadDataBtn').addEventListener('click', async () => {
-  const dataDiv = document.getElementById('data');
+  const dataDiv = document.getElementById('dataContainer');
   dataDiv.innerHTML = '';
 
   const endpoints = [
@@ -174,4 +174,18 @@ convertForm.addEventListener('submit', async (e) => {
   showMessage(await response.text());
   // Reload data
   loadData();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+
+  // Tab switching
+  document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      button.classList.add('active');
+      document.getElementById(button.dataset.tab).classList.add('active');
+    });
+  });
 });
