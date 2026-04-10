@@ -1,0 +1,73 @@
+APP_NAME=ehotel-app-1.0-SNAPSHOT-jar-with-dependencies.jar
+APP_JAR=target/$(APP_NAME)
+DB_NAME=ehotels
+DB_USER=postgres
+DB_PASSWORD=postgres
+SQL_FILE=database/ehotels_postgresql.sql
+
+SERVER_USER?=user
+SERVER_HOST?=server
+SERVER_DIR?=/opt/ehotel
+
+.PHONY: help install db-init setup build run start deploy-copy deploy-run deploy clean
+
+help:
+	@echo "macOS eHotel Build System"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make install      - Install Java, Maven, PostgreSQL (macOS via Homebrew)"
+	@echo "  make db-init      - Create ehotels database and import SQL file"
+	@echo "  make setup        - install + db-init"
+	@echo "  make build        - Build jar with Maven"
+	@echo "  make run          - Run application jar"
+	@echo "  make start        - build + run"
+	@echo "  make clean        - Remove build artifacts"
+	@echo "  make deploy-copy  - Copy jar to remote server"
+	@echo "  make deploy-run   - Run jar on remote server (nohup)"
+	@echo "  make deploy       - build + deploy-copy + deploy-run"
+	@echo ""
+	@echo "Deploy vars: SERVER_USER, SERVER_HOST, SERVER_DIR"
+	@echo "Example: make -f Makefile.mac deploy SERVER_USER=ubuntu SERVER_HOST=1.2.3.4"
+
+install:
+	@echo "Checking if Homebrew is installed..."
+	@command -v brew >/dev/null 2>&1 || (echo "Homebrew not found. Install from https://brew.sh" && exit 1)
+	@echo "Installing Java 21, Maven, and PostgreSQL via Homebrew..."
+	brew tap homebrew/cask-versions
+	brew install openjdk@21 maven postgresql
+	@echo "Starting PostgreSQL service..."
+	brew services start postgresql || brew services restart postgresql
+	@echo "✓ Installation complete"
+
+db-init:
+	@test -f "$(SQL_FILE)" || (echo "Missing SQL file: $(SQL_FILE)" && exit 1)
+	@echo "Initializing database..."
+	@command -v psql >/dev/null 2>&1 || (echo "PostgreSQL not installed. Run: make -f Makefile.mac install" && exit 1)
+	psql -U $(DB_USER) -h localhost -c "ALTER USER $(DB_USER) WITH PASSWORD '$(DB_PASSWORD)' WITH LOGIN;" 2>/dev/null || psql -U $(DB_USER) -h localhost -c "CREATE USER $(DB_USER) WITH PASSWORD '$(DB_PASSWORD)';" 2>/dev/null || true
+	psql -U $(DB_USER) -h localhost -c "ALTER USER $(DB_USER) CREATEDB;" 2>/dev/null || true
+	psql -U $(DB_USER) -h localhost -tAc "SELECT 1 FROM pg_database WHERE datname='$(DB_NAME)'" | tr -d '[:space:]' | grep -qx "1" || psql -U $(DB_USER) -h localhost -c "CREATE DATABASE $(DB_NAME);"
+	psql -U $(DB_USER) -h localhost -d $(DB_NAME) < "$(abspath $(SQL_FILE))"
+	@echo "✓ Database initialized"
+
+setup: install db-init
+
+build:
+	mvn clean package
+
+run:
+	java -jar $(APP_JAR)
+
+start: build run
+
+clean:
+	mvn clean
+	rm -rf target/
+
+deploy-copy: build
+	ssh $(SERVER_USER)@$(SERVER_HOST) "mkdir -p $(SERVER_DIR)"
+	scp $(APP_JAR) $(SERVER_USER)@$(SERVER_HOST):$(SERVER_DIR)/
+
+deploy-run:
+	ssh $(SERVER_USER)@$(SERVER_HOST) "cd $(SERVER_DIR) && nohup java -jar $(APP_NAME) > ehotel.log 2>&1 &"
+
+deploy: deploy-copy deploy-run
