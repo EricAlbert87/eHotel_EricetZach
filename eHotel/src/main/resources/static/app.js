@@ -163,9 +163,6 @@ document.getElementById('loadDataBtn').addEventListener('click', async () => {
     }
   }
 });
-    }
-  }
-});
 
 searchForm.addEventListener('submit', async (e) => {
   e.preventDefault();
