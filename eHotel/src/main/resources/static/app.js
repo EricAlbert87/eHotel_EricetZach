@@ -3,11 +3,16 @@ const reservationForm = document.getElementById('reservationForm');
 const locationForm = document.getElementById('locationForm');
 const convertForm = document.getElementById('convertForm');
 const results = document.getElementById('results');
-const message = document.getElementById('message');
 
 function showMessage(text) {
-  message.style.display = 'block';
-  message.textContent = text;
+  const activeTab = document.querySelector('.tab-content.active');
+  if (activeTab) {
+    const message = activeTab.querySelector('.message');
+    if (message) {
+      message.style.display = 'block';
+      message.textContent = text;
+    }
+  }
 }
 
 async function loadSelect(url, selectElement) {
