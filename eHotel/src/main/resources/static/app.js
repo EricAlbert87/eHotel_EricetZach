@@ -102,6 +102,7 @@ async function loadData() {
   await loadSelect('/api/zones', searchForm.querySelector('[name=zone]'));
   await loadSelect('/api/reservations', document.getElementById('archiveReservationSelect'));
   await loadSelect('/api/locations', document.getElementById('archiveLocationSelect'));
+  await loadReservationsList();
 }
 
 // Handle radio button change for location type
@@ -129,6 +130,49 @@ locationForm.querySelectorAll('[name=type]').forEach(radio => {
   });
 });
 
+async function loadReservationsList() {
+  const listDiv = document.getElementById('reservationsList');
+  try {
+    const response = await fetch('/api/reservations');
+    const reservations = await response.json();
+    
+    if (!reservations.length) {
+      listDiv.innerHTML = '<p style="text-align: center; color: #999;">Aucune réservation disponible</p>';
+      return;
+    }
+    
+    let html = '<table style="width: 100%; border-collapse: collapse;">';
+    html += '<thead><tr style="border-bottom: 2px solid #ddd; background: #f9fafb;"><th style="padding: 12px; text-align: left; font-weight: 600;">ID</th><th style="padding: 12px; text-align: left; font-weight: 600;">Client</th><th style="padding: 12px; text-align: left; font-weight: 600;">Montant</th></tr></thead>';
+    html += '<tbody>';
+    
+    reservations.forEach((res) => {
+      html += '<tr style="border-bottom: 1px solid #eee; hover: { background: #f1f9ff; }">';
+      html += `<td style="padding: 12px; color: #667eea; font-weight: 600;">${res.split(': ')[0]}</td>`;
+      html += `<td style="padding: 12px;">${res.split(': ')[1] || 'N/A'}</td>`;
+      html += `<td style="padding: 12px;">En cours</td>`;
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table>';
+    listDiv.innerHTML = html;
+  } catch (e) {
+    listDiv.innerHTML = `<p style="color: #e74c3c;">Erreur: ${e.message}</p>`;
+  }
+}
+
+// Show reservation details when selected
+document.addEventListener('change', (e) => {
+  if (e.target.name === 'reservationId' && document.getElementById('conversionFields').style.display !== 'none') {
+    const details = document.getElementById('reservationDetails');
+    if (e.target.value) {
+      details.style.display = 'block';
+      document.getElementById('reservationDetailText').textContent = `Réservation #${e.target.value} sélectionnée`;
+    } else {
+      details.style.display = 'none';
+    }
+  }
+});
+
 document.getElementById('loadDataBtn').addEventListener('click', async () => {
   const dataDiv = document.getElementById('dataContainer');
   dataDiv.innerHTML = '<div style="text-align: center; padding: 2rem;"><p style="color: #667eea; font-size: 1.1rem; font-weight: 600;">⏳ Chargement des données...</p></div>';
@@ -138,7 +182,8 @@ document.getElementById('loadDataBtn').addEventListener('click', async () => {
     { name: '👨‍💼 Employés', url: '/api/employees', headers: ['ID', 'Nom complet'], icon: '👨‍💼' },
     { name: '🏨 Hôtels', url: '/api/hotels', headers: ['ID', 'Nom'], icon: '🏨' },
     { name: '🛏️ Chambres', url: '/api/allrooms', headers: ['ID', 'Numéro'], icon: '🛏️' },
-    { name: '📅 Réservations', url: '/api/reservations', headers: ['Détails'], icon: '📅' }
+    { name: '📅 Réservations', url: '/api/reservations', headers: ['Détails'], icon: '📅' },
+    { name: '🔑 Locations', url: '/api/locations', headers: ['Détails'], icon: '🔑' }
   ];
 
   dataDiv.innerHTML = '';
