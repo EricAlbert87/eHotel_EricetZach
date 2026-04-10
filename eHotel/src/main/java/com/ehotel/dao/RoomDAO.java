@@ -14,7 +14,7 @@ public class RoomDAO {
         List<RoomSearchResult> rooms = new ArrayList<>();
 
         String sql = """
-                SELECT c.chambre_id, h.nom AS hotel, h.zone, c.numero, c.prix, c.capacite, c.superficie
+                SELECT c.chambre_id, h.nom AS hotel, ch.nom AS chaine, h.zone, c.numero, c.prix, c.capacite, c.superficie
                 FROM chambre c
                 JOIN hotel h ON h.hotel_id = c.hotel_id
                 JOIN chaine_hotel ch ON ch.chaine_id = h.chaine_id
@@ -23,7 +23,7 @@ public class RoomDAO {
                   AND c.capacite >= ?
                   AND c.prix <= ?
                   AND c.superficie >= ?
-                  AND (? = '' OR ch.nom = ?)
+                  AND (? = '' OR ch.nom = ? OR ch.chaine_id::text = ?)
                   AND (? = 0 OR h.categorie = ?)
                   AND (? = '' OR ? = '' OR NOT EXISTS (
                       SELECT 1 FROM reservation r
@@ -46,18 +46,19 @@ public class RoomDAO {
             ps.setDouble(5, superficieMin);
             ps.setString(6, chaine == null ? "" : chaine);
             ps.setString(7, chaine == null ? "" : chaine);
-            ps.setInt(8, categorie);
+            ps.setString(8, chaine == null ? "" : chaine);
             ps.setInt(9, categorie);
-            ps.setString(10, dateDebut == null ? "" : dateDebut);
-            ps.setString(11, dateFin == null ? "" : dateFin);
+            ps.setInt(10, categorie);
+            ps.setString(11, dateDebut == null ? "" : dateDebut);
+            ps.setString(12, dateFin == null ? "" : dateFin);
             if (!dateDebut.isEmpty() && !dateFin.isEmpty()) {
-                ps.setDate(12, java.sql.Date.valueOf(dateFin));
-                ps.setDate(13, java.sql.Date.valueOf(dateDebut));
+                ps.setDate(13, java.sql.Date.valueOf(dateFin));
+                ps.setDate(14, java.sql.Date.valueOf(dateDebut));
             } else {
-                ps.setDate(12, java.sql.Date.valueOf("9999-12-31"));
-                ps.setDate(13, java.sql.Date.valueOf("0001-01-01"));
+                ps.setDate(13, java.sql.Date.valueOf("9999-12-31"));
+                ps.setDate(14, java.sql.Date.valueOf("0001-01-01"));
             }
-            ps.setInt(14, nombreChambres);
+            ps.setInt(15, nombreChambres);
 
             ResultSet rs = ps.executeQuery();
 
@@ -65,6 +66,7 @@ public class RoomDAO {
                 rooms.add(new RoomSearchResult(
                         rs.getInt("chambre_id"),
                         rs.getString("hotel"),
+                        rs.getString("chaine"),
                         rs.getString("zone"),
                         rs.getString("numero"),
                         rs.getDouble("prix"),

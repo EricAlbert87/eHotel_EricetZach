@@ -4,6 +4,31 @@ const locationForm = document.getElementById('locationForm');
 const convertForm = document.getElementById('convertForm');
 const results = document.getElementById('results');
 
+const defaultChains = [
+  'Marriott International',
+  'Hilton Worldwide',
+  'Hyatt Hotels Corporation',
+  'IHG Hotels & Resorts',
+  'Accor',
+  'Wyndham Hotels & Resorts',
+  'Choice Hotels',
+  'Best Western'
+];
+
+const defaultZones = [
+  'Ottawa Centre',
+  'Toronto Waterfront',
+  'Montreal Centre',
+  'Vancouver Bay',
+  'Halifax Centre',
+  'St Johns Port',
+  'Times Square',
+  'London Centre',
+  'Paris Centre',
+  'Shibuya',
+  'Bangkok Centre'
+];
+
 function showMessage(text) {
   const activeTab = document.querySelector('.tab-content.active');
   if (activeTab) {
@@ -18,9 +43,20 @@ function showMessage(text) {
 async function loadSelect(url, selectElement) {
   try {
     const response = await fetch(url);
-    const data = await response.json();
+    let data = await response.json();
     const firstOption = selectElement.querySelector('option');
     selectElement.innerHTML = firstOption ? firstOption.outerHTML : '<option value="">Sélectionner</option>';
+
+    if (!Array.isArray(data) || data.length === 0) {
+      if (selectElement.name === 'chaine') {
+        data = defaultChains;
+      } else if (selectElement.name === 'zone') {
+        data = defaultZones;
+      } else {
+        data = [];
+      }
+    }
+
     data.forEach(item => {
       const option = document.createElement('option');
       if (typeof item === 'string' && item.includes(':')) {
@@ -35,6 +71,21 @@ async function loadSelect(url, selectElement) {
     });
   } catch (e) {
     console.error('Erreur lors du chargement:', e);
+    if (selectElement.name === 'chaine') {
+      defaultChains.forEach(chain => {
+        const option = document.createElement('option');
+        option.value = chain;
+        option.textContent = chain;
+        selectElement.appendChild(option);
+      });
+    } else if (selectElement.name === 'zone') {
+      defaultZones.forEach(zone => {
+        const option = document.createElement('option');
+        option.value = zone;
+        option.textContent = zone;
+        selectElement.appendChild(option);
+      });
+    }
   }
 }
 
@@ -52,8 +103,6 @@ async function loadData() {
   await loadSelect('/api/reservations', document.getElementById('archiveReservationSelect'));
   await loadSelect('/api/locations', document.getElementById('archiveLocationSelect'));
 }
-
-document.addEventListener('DOMContentLoaded', loadData);
 
 // Handle radio button change for location type
 locationForm.querySelectorAll('[name=type]').forEach(radio => {
@@ -79,8 +128,6 @@ locationForm.querySelectorAll('[name=type]').forEach(radio => {
     }
   });
 });
-
-document.addEventListener('DOMContentLoaded', loadData);
 
 document.getElementById('loadDataBtn').addEventListener('click', async () => {
   const dataDiv = document.getElementById('dataContainer');
@@ -194,6 +241,7 @@ searchForm.addEventListener('submit', async (e) => {
         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
           <div>
             <strong style="font-size: 1.1rem;">🏢 ${room.hotel}</strong><br>
+            <small style="color: #4f46e5; font-weight: 700;">🏷️ ${room.chaine}</small><br>
             <small style="color: #666;">📍 ${room.zone}</small>
           </div>
           <div style="text-align: right;">

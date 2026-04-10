@@ -3,15 +3,17 @@ package com.ehotel.model;
 public class RoomSearchResult {
     private final int chambreId;
     private final String hotel;
+    private final String chaine;
     private final String zone;
     private final String numero;
     private final double prix;
     private final int capacite;
     private final double superficie;
 
-    public RoomSearchResult(int chambreId, String hotel, String zone, String numero, double prix, int capacite, double superficie) {
+    public RoomSearchResult(int chambreId, String hotel, String chaine, String zone, String numero, double prix, int capacite, double superficie) {
         this.chambreId = chambreId;
         this.hotel = hotel;
+        this.chaine = chaine;
         this.zone = zone;
         this.numero = numero;
         this.prix = prix;
@@ -21,6 +23,7 @@ public class RoomSearchResult {
 
     public int getChambreId() { return chambreId; }
     public String getHotel() { return hotel; }
+    public String getChaine() { return chaine; }
     public String getZone() { return zone; }
     public String getNumero() { return numero; }
     public double getPrix() { return prix; }

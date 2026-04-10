@@ -46,9 +46,10 @@ public class Main {
                     RoomSearchResult r = rooms.get(i);
                     if (i > 0) json.append(",");
                     json.append(String.format(
-                            "{\"chambreId\":%d,\"hotel\":\"%s\",\"zone\":\"%s\",\"numero\":\"%s\",\"prix\":%.2f,\"capacite\":%d,\"superficie\":%.2f}",
+                            "{\"chambreId\":%d,\"hotel\":\"%s\",\"chaine\":\"%s\",\"zone\":\"%s\",\"numero\":\"%s\",\"prix\":%.2f,\"capacite\":%d,\"superficie\":%.2f}",
                             r.getChambreId(),
                             escape(r.getHotel()),
+                            escape(r.getChaine()),
                             escape(r.getZone()),
                             escape(r.getNumero()),
                             r.getPrix(),
@@ -67,6 +68,18 @@ public class Main {
         server.createContext("/api/chains", exchange -> {
             try {
                 List<String> chains = service.getAllChains();
+                if (chains.isEmpty()) {
+                    chains = List.of(
+                            "Marriott International",
+                            "Hilton Worldwide",
+                            "Hyatt Hotels Corporation",
+                            "IHG Hotels & Resorts",
+                            "Accor",
+                            "Wyndham Hotels & Resorts",
+                            "Choice Hotels",
+                            "Best Western"
+                    );
+                }
                 String json = "[" + String.join(",", chains.stream().map(c -> "\"" + escape(c) + "\"").toList()) + "]";
                 sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
@@ -77,6 +90,21 @@ public class Main {
         server.createContext("/api/zones", exchange -> {
             try {
                 List<String> zones = service.getAllZones();
+                if (zones.isEmpty()) {
+                    zones = List.of(
+                            "Ottawa Centre",
+                            "Toronto Waterfront",
+                            "Montreal Centre",
+                            "Vancouver Bay",
+                            "Halifax Centre",
+                            "St Johns Port",
+                            "Times Square",
+                            "London Centre",
+                            "Paris Centre",
+                            "Shibuya",
+                            "Bangkok Centre"
+                    );
+                }
                 String json = "[" + String.join(",", zones.stream().map(z -> "\"" + escape(z) + "\"").toList()) + "]";
                 sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
