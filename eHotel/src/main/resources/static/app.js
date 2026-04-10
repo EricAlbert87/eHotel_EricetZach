@@ -76,25 +76,60 @@ document.addEventListener('DOMContentLoaded', loadData);
 
 document.getElementById('loadDataBtn').addEventListener('click', async () => {
   const dataDiv = document.getElementById('dataContainer');
-  dataDiv.innerHTML = '';
+  dataDiv.innerHTML = '<p>Chargement...</p>';
 
   const endpoints = [
-    { name: 'Clients', url: '/api/clients' },
-    { name: 'Employés', url: '/api/employees' },
-    { name: 'Hôtels', url: '/api/hotels' },
-    { name: 'Chambres', url: '/api/allrooms' },
-    { name: 'Réservations', url: '/api/reservations' }
+    { name: 'Clients', url: '/api/clients', headers: ['ID', 'Nom complet'] },
+    { name: 'Employés', url: '/api/employees', headers: ['ID', 'Nom complet'] },
+    { name: 'Hôtels', url: '/api/hotels', headers: ['ID', 'Nom'] },
+    { name: 'Chambres', url: '/api/allrooms', headers: ['ID', 'Numéro'] },
+    { name: 'Réservations', url: '/api/reservations', headers: ['Détails'] }
   ];
+
+  dataDiv.innerHTML = '';
 
   for (const ep of endpoints) {
     try {
       const response = await fetch(ep.url);
       const items = await response.json();
-      const div = document.createElement('div');
-      div.innerHTML = `<h3>${ep.name}</h3><ul>${items.map(item => `<li>${item}</li>`).join('')}</ul>`;
-      dataDiv.appendChild(div);
+      const section = document.createElement('div');
+      section.className = 'data-section';
+      section.innerHTML = `<h3>${ep.name}</h3>`;
+      const table = document.createElement('table');
+      table.className = 'data-table';
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+      ep.headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      items.forEach(item => {
+        const row = document.createElement('tr');
+        if (ep.name === 'Réservations') {
+          const td = document.createElement('td');
+          td.textContent = item;
+          row.appendChild(td);
+        } else {
+          const [id, name] = item.split(': ', 2);
+          const td1 = document.createElement('td');
+          td1.textContent = id;
+          const td2 = document.createElement('td');
+          td2.textContent = name || item;
+          row.appendChild(td1);
+          row.appendChild(td2);
+        }
+        tbody.appendChild(row);
+      });
+      table.appendChild(tbody);
+      section.appendChild(table);
+      dataDiv.appendChild(section);
     } catch (e) {
       console.error(e);
+      dataDiv.innerHTML += `<p>Erreur lors du chargement de ${ep.name}</p>`;
     }
   }
 });

@@ -151,3 +151,45 @@ legend {
   font-weight: bold;
   color: #0a6b70;
 }
+
+.btn-primary {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #007bff 100%);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.data-table th, .data-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #f2f2f2;
+  color: #222;
+}
+
+.data-section {
+  margin-bottom: 2rem;
+}
+
+.data-section h3 {
+  color: #0a6b70;
+  margin-bottom: 0.5rem;
+}

@@ -21,11 +21,12 @@
     <div id="search" class="tab-content active">
       <section class="card">
         <h2>Recherche de chambres</h2>
+        <p>Recherchez des chambres disponibles selon vos critères. Tous les champs sont optionnels.</p>
       <form id="searchForm">
         <input name="zone" placeholder="Zone, ex. Ottawa Centre">
-        <input name="capacite" type="number" min="1" value="1" placeholder="Capacité">
-        <input name="prix" type="number" min="1" value="250" placeholder="Prix max">
-        <input name="superficie" type="number" min="1" value="20" placeholder="Superficie min">
+        <input name="capacite" type="number" min="1" value="1" placeholder="Capacité minimum">
+        <input name="prix" type="number" min="1" value="250" placeholder="Prix maximum">
+        <input name="superficie" type="number" min="1" value="20" placeholder="Superficie minimum (m²)">
         <select name="chaine">
           <option value="">Toutes les chaînes</option>
         </select>
@@ -37,31 +38,37 @@
           <option value="4">4 étoiles</option>
           <option value="5">5 étoiles</option>
         </select>
-        <input name="dateDebut" type="date" placeholder="Date début">
-        <input name="dateFin" type="date" placeholder="Date fin">
-        <input name="nombreChambres" type="number" min="1" value="10" placeholder="Nombre de chambres">
-        <button type="submit">Rechercher</button>
+        <input name="dateDebut" type="date" placeholder="Date d'arrivée">
+        <input name="dateFin" type="date" placeholder="Date de départ">
+        <input name="nombreChambres" type="number" min="1" value="10" placeholder="Nombre de chambres à afficher">
+        <button type="submit" class="btn-primary">Rechercher des chambres</button>
       </form>
       <div id="results"></div>
     </section>
+    </div>
 
+    <div id="reservation" class="tab-content">
     <section class="card">
       <h2>Créer une réservation</h2>
+      <p>Sélectionnez un client et une chambre pour créer une réservation.</p>
       <form id="reservationForm">
         <select name="clientId" required>
-          <option value="">Sélectionner un client</option>
+          <option value="">Choisir un client</option>
         </select>
         <select name="chambreId" required>
-          <option value="">Sélectionner une chambre</option>
+          <option value="">Choisir une chambre</option>
         </select>
-        <input name="dateDebut" type="date" required>
-        <input name="dateFin" type="date" required>
-        <button type="submit">Réserver</button>
+        <input name="dateDebut" type="date" required placeholder="Date d'arrivée">
+        <input name="dateFin" type="date" required placeholder="Date de départ">
+        <button type="submit" class="btn-primary">Créer la réservation</button>
       </form>
     </section>
+    </div>
 
+    <div id="location" class="tab-content">
     <section class="card">
       <h2>Créer une location</h2>
+      <p>Choisissez le type de location : directe ou conversion d'une réservation existante.</p>
       <form id="locationForm">
         <fieldset>
           <legend>Type de location</legend>
@@ -70,23 +77,23 @@
         </fieldset>
         <div id="directFields">
           <select name="clientId" required>
-            <option value="">Sélectionner un client</option>
+            <option value="">Choisir un client</option>
           </select>
           <select name="chambreId" required>
-            <option value="">Sélectionner une chambre</option>
+            <option value="">Choisir une chambre</option>
           </select>
-          <input name="dateDebut" type="date" required>
-          <input name="dateFin" type="date" required>
+          <input name="dateDebut" type="date" required placeholder="Date d'arrivée">
+          <input name="dateFin" type="date" required placeholder="Date de départ">
         </div>
         <div id="conversionFields" style="display: none;">
           <select name="reservationId" required>
-            <option value="">Sélectionner une réservation</option>
+            <option value="">Choisir une réservation</option>
           </select>
         </div>
         <select name="employeId" required>
-          <option value="">Sélectionner un employé</option>
+          <option value="">Choisir un employé</option>
         </select>
-        <button type="submit">Louer</button>
+        <button type="submit" class="btn-primary">Créer la location</button>
       </form>
     </section>
 
@@ -94,22 +101,24 @@
       <h2>Convertir une réservation en location</h2>
       <form id="convertForm">
         <select name="reservationId" required>
-          <option value="">Sélectionner une réservation</option>
+          <option value="">Choisir une réservation</option>
         </select>
         <select name="employeId" required>
-          <option value="">Sélectionner un employé</option>
+          <option value="">Choisir un employé</option>
         </select>
-        <button type="submit">Convertir</button>
+        <button type="submit" class="btn-primary">Convertir la réservation</button>
       </form>
     </section>
+    </div>
 
-    <div id="message" class="message"></div>
-
+    <div id="data" class="tab-content">
     <section class="card">
       <h2>Données</h2>
-      <button id="loadDataBtn">Charger les données</button>
-      <div id="data"></div>
+      <p>Cliquez pour charger et afficher les listes de clients, employés, hôtels, chambres et réservations.</p>
+      <button id="loadDataBtn" class="btn-primary">Charger les données</button>
+      <div id="dataContainer"></div>
     </section>
+    </div>
   </main>
 
   <script src="/app.js"></script>
