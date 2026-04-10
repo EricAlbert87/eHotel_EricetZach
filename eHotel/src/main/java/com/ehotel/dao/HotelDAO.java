@@ -26,4 +26,40 @@ public class HotelDAO {
 
         return hotels;
     }
+
+    public List<String> getAllChains() {
+        List<String> chains = new ArrayList<>();
+        String sql = "SELECT chaine_id, nom FROM chaine_hotel ORDER BY nom";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                chains.add(rs.getInt("chaine_id") + ": " + rs.getString("nom"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des chaînes", e);
+        }
+
+        return chains;
+    }
+
+    public List<String> getAllZones() {
+        List<String> zones = new ArrayList<>();
+        String sql = "SELECT DISTINCT zone FROM hotel ORDER BY zone";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                zones.add(rs.getString("zone"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des zones", e);
+        }
+
+        return zones;
+    }
 }

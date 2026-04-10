@@ -43,6 +43,14 @@ public class HotelService {
         return hotelDAO.getAllHotels();
     }
 
+    public List<String> getAllChains() {
+        return hotelDAO.getAllChains();
+    }
+
+    public List<String> getAllZones() {
+        return hotelDAO.getAllZones();
+    }
+
     public List<String> getAllRooms() {
         return roomDAO.getAllRooms();
     }

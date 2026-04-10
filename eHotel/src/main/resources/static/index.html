@@ -25,7 +25,9 @@
         <p>Recherchez des chambres disponibles selon vos critères. Tous les champs sont optionnels.</p>
       <form id="searchForm">
         <div class="form-row">
-          <input name="zone" placeholder="Zone, ex. Ottawa Centre">
+          <select name="zone">
+            <option value="">Toutes les zones</option>
+          </select>
           <input name="capacite" type="number" min="1" value="1" placeholder="Capacité minimum">
           <input name="prix" type="number" min="1" value="250" placeholder="Prix maximum">
         </div>

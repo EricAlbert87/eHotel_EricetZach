@@ -71,17 +71,18 @@ public class Main {
 
         server.createContext("/api/chains", exchange -> {
             try {
-                // Get distinct chains from hotels or chaine_hotel
-                List<String> chains = new ArrayList<>();
-                String sql = "SELECT nom FROM chaine_hotel ORDER BY nom";
-                try (Connection conn = DatabaseConfig.getConnection();
-                     PreparedStatement ps = conn.prepareStatement(sql);
-                     ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        chains.add(rs.getString("nom"));
-                    }
-                }
+                List<String> chains = service.getAllChains();
                 String json = "[" + String.join(",", chains.stream().map(c -> "\"" + escape(c) + "\"").toList()) + "]";
+                sendResponse(exchange, 200, json, "application/json; charset=utf-8");
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+            }
+        });
+
+        server.createContext("/api/zones", exchange -> {
+            try {
+                List<String> zones = service.getAllZones();
+                String json = "[" + String.join(",", zones.stream().map(z -> "\"" + escape(z) + "\"").toList()) + "]";
                 sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
                 sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");

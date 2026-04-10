@@ -43,6 +43,7 @@ async function loadData() {
   await loadSelect('/api/reservations', convertForm.querySelector('[name=reservationId]'));
   await loadSelect('/api/reservations', locationForm.querySelector('[name=reservationId]'));
   await loadSelect('/api/chains', searchForm.querySelector('[name=chaine]'));
+  await loadSelect('/api/zones', searchForm.querySelector('[name=zone]'));
   await loadSelect('/api/reservations', document.getElementById('archiveReservationSelect'));
   await loadSelect('/api/locations', document.getElementById('archiveLocationSelect'));
 }
