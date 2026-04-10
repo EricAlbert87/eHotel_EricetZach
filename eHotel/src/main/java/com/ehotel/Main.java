@@ -1,11 +1,5 @@
 package com.ehotel;
 
-import com.ehotel.config.DatabaseConfig;
-import com.ehotel.model.RoomSearchResult;
-import com.ehotel.service.HotelService;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,6 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ehotel.config.DatabaseConfig;
+import com.ehotel.model.RoomSearchResult;
+import com.ehotel.service.HotelService;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+
 public class Main {
     private static final HotelService service = new HotelService();
 
@@ -23,28 +23,32 @@ public class Main {
         HttpServer server = HttpServer.create(new InetSocketAddress(DatabaseConfig.getServerPort()), 0);
 
         server.createContext("/", exchange -> serveStatic(exchange, "/static/index.html", "text/html; charset=utf-8"));
-        server.createContext("/app.css", exchange -> serveStatic(exchange, "/static/app.css", "text/css; charset=utf-8"));
-        server.createContext("/app.js", exchange -> serveStatic(exchange, "/static/app.js", "application/javascript; charset=utf-8"));
+        server.createContext("/app.css",
+                exchange -> serveStatic(exchange, "/static/app.css", "text/css; charset=utf-8"));
+        server.createContext("/app.js",
+                exchange -> serveStatic(exchange, "/static/app.js", "application/javascript; charset=utf-8"));
 
         server.createContext("/api/rooms", exchange -> {
             try {
                 Map<String, String> query = parseQuery(exchange.getRequestURI().getRawQuery());
                 String zone = query.getOrDefault("zone", "");
-                int capacite = Integer.parseInt(query.getOrDefault("capacite", "1"));
-                double prix = Double.parseDouble(query.getOrDefault("prix", "9999"));
-                double superficie = Double.parseDouble(query.getOrDefault("superficie", "0"));
+                int capacite = parseIntQueryParam(query, "capacite", 1);
+                double prix = parseDoubleQueryParam(query, "prix", 9999);
+                double superficie = parseDoubleQueryParam(query, "superficie", 0);
                 String chaine = query.getOrDefault("chaine", "");
-                int categorie = Integer.parseInt(query.getOrDefault("categorie", "0"));
+                int categorie = parseIntQueryParam(query, "categorie", 0);
                 String dateDebut = query.getOrDefault("dateDebut", "");
                 String dateFin = query.getOrDefault("dateFin", "");
-                int nombreChambres = Integer.parseInt(query.getOrDefault("nombreChambres", "10"));
+                int nombreChambres = parseIntQueryParam(query, "nombreChambres", 10);
 
-                List<RoomSearchResult> rooms = service.searchRooms(zone, capacite, prix, superficie, chaine, categorie, dateDebut, dateFin, nombreChambres);
+                List<RoomSearchResult> rooms = service.searchRooms(zone, capacite, prix, superficie, chaine, categorie,
+                        dateDebut, dateFin, nombreChambres);
 
                 StringBuilder json = new StringBuilder("[");
                 for (int i = 0; i < rooms.size(); i++) {
                     RoomSearchResult r = rooms.get(i);
-                    if (i > 0) json.append(",");
+                    if (i > 0)
+                        json.append(",");
                     json.append(String.format(
                             "{\"chambreId\":%d,\"hotel\":\"%s\",\"chaine\":\"%s\",\"zone\":\"%s\",\"numero\":\"%s\",\"prix\":%.2f,\"capacite\":%d,\"superficie\":%.2f}",
                             r.getChambreId(),
@@ -54,14 +58,17 @@ public class Main {
                             escape(r.getNumero()),
                             r.getPrix(),
                             r.getCapacite(),
-                            r.getSuperficie()
-                    ));
+                            r.getSuperficie()));
                 }
                 json.append("]");
 
                 sendResponse(exchange, 200, json.toString(), "application/json; charset=utf-8");
+            } catch (IllegalArgumentException e) {
+                sendResponse(exchange, 400, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                        "application/json; charset=utf-8");
             } catch (Exception e) {
-                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                        "application/json; charset=utf-8");
             }
         });
 
@@ -77,13 +84,24 @@ public class Main {
                             "Accor",
                             "Wyndham Hotels & Resorts",
                             "Choice Hotels",
-                            "Best Western"
-                    );
+                            "Best Western");
                 }
                 String json = "[" + String.join(",", chains.stream().map(c -> "\"" + escape(c) + "\"").toList()) + "]";
                 sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
-                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                        "application/json; charset=utf-8");
+            }
+        });
+
+        server.createContext("/api/clients", exchange -> {
+            try {
+                List<String> clients = service.getAllClients();
+                String json = "[" + String.join(",", clients.stream().map(c -> "\"" + escape(c) + "\"").toList()) + "]";
+                sendResponse(exchange, 200, json, "application/json; charset=utf-8");
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                        "application/json; charset=utf-8");
             }
         });
 
@@ -102,23 +120,25 @@ public class Main {
                             "London Centre",
                             "Paris Centre",
                             "Shibuya",
-                            "Bangkok Centre"
-                    );
+                            "Bangkok Centre");
                 }
                 String json = "[" + String.join(",", zones.stream().map(z -> "\"" + escape(z) + "\"").toList()) + "]";
                 sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
-                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                        "application/json; charset=utf-8");
             }
         });
 
         server.createContext("/api/employees", exchange -> {
             try {
                 List<String> employees = service.getAllEmployees();
-                String json = "[" + String.join(",", employees.stream().map(e -> "\"" + escape(e) + "\"").toList()) + "]";
+                String json = "[" + String.join(",", employees.stream().map(e -> "\"" + escape(e) + "\"").toList())
+                        + "]";
                 sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
-                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                        "application/json; charset=utf-8");
             }
         });
 
@@ -128,7 +148,8 @@ public class Main {
                 String json = "[" + String.join(",", hotels.stream().map(h -> "\"" + escape(h) + "\"").toList()) + "]";
                 sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
-                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                        "application/json; charset=utf-8");
             }
         });
 
@@ -138,7 +159,8 @@ public class Main {
                 String json = "[" + String.join(",", rooms.stream().map(r -> "\"" + escape(r) + "\"").toList()) + "]";
                 sendResponse(exchange, 200, json, "application/json; charset=utf-8");
             } catch (Exception e) {
-                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                        "application/json; charset=utf-8");
             }
         });
 
@@ -146,10 +168,12 @@ public class Main {
             if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
                 try {
                     List<String> reservations = service.getAllReservations();
-                    String json = "[" + String.join(",", reservations.stream().map(r -> "\"" + escape(r) + "\"").toList()) + "]";
+                    String json = "["
+                            + String.join(",", reservations.stream().map(r -> "\"" + escape(r) + "\"").toList()) + "]";
                     sendResponse(exchange, 200, json, "application/json; charset=utf-8");
                 } catch (Exception e) {
-                    sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                    sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                            "application/json; charset=utf-8");
                 }
             } else if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
                 try {
@@ -158,8 +182,7 @@ public class Main {
                             Integer.parseInt(body.get("clientId")),
                             Integer.parseInt(body.get("chambreId")),
                             body.get("dateDebut"),
-                            body.get("dateFin")
-                    );
+                            body.get("dateFin"));
                     sendResponse(exchange, 200, "Réservation créée avec succès.", "text/plain; charset=utf-8");
                 } catch (Exception e) {
                     sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
@@ -173,10 +196,12 @@ public class Main {
             if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
                 try {
                     List<String> locations = service.getAllLocations();
-                    String json = "[" + String.join(",", locations.stream().map(r -> "\"" + escape(r) + "\"").toList()) + "]";
+                    String json = "[" + String.join(",", locations.stream().map(r -> "\"" + escape(r) + "\"").toList())
+                            + "]";
                     sendResponse(exchange, 200, json, "application/json; charset=utf-8");
                 } catch (Exception e) {
-                    sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                    sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}",
+                            "application/json; charset=utf-8");
                 }
             } else if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
                 try {
@@ -186,8 +211,7 @@ public class Main {
                             Integer.parseInt(body.get("chambreId")),
                             body.get("dateDebut"),
                             body.get("dateFin"),
-                            Integer.parseInt(body.get("employeId"))
-                    );
+                            Integer.parseInt(body.get("employeId")));
                     sendResponse(exchange, 200, "Location créée avec succès.", "text/plain; charset=utf-8");
                 } catch (Exception e) {
                     sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
@@ -281,7 +305,8 @@ public class Main {
 
     private static Map<String, String> parseQuery(String query) {
         Map<String, String> map = new HashMap<>();
-        if (query == null || query.isBlank()) return map;
+        if (query == null || query.isBlank())
+            return map;
 
         for (String pair : query.split("&")) {
             String[] parts = pair.split("=", 2);
@@ -297,7 +322,30 @@ public class Main {
         return parseQuery(body);
     }
 
-    private static void sendResponse(HttpExchange exchange, int status, String body, String contentType) throws IOException {
+    private static int parseIntQueryParam(Map<String, String> query, String name, int defaultValue) {
+        String raw = query.get(name);
+        if (raw == null || raw.isBlank())
+            return defaultValue;
+        try {
+            return Integer.parseInt(raw);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Parametre invalide: " + name + " doit etre un entier");
+        }
+    }
+
+    private static double parseDoubleQueryParam(Map<String, String> query, String name, double defaultValue) {
+        String raw = query.get(name);
+        if (raw == null || raw.isBlank())
+            return defaultValue;
+        try {
+            return Double.parseDouble(raw);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Parametre invalide: " + name + " doit etre numerique");
+        }
+    }
+
+    private static void sendResponse(HttpExchange exchange, int status, String body, String contentType)
+            throws IOException {
         byte[] data = body.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().add("Content-Type", contentType);
         exchange.sendResponseHeaders(status, data.length);
