@@ -146,23 +146,30 @@ public class Main {
         });
 
         server.createContext("/api/locations", exchange -> {
-            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+            if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                try {
+                    List<String> locations = service.getAllLocations();
+                    String json = "[" + String.join(",", locations.stream().map(r -> "\"" + escape(r) + "\"").toList()) + "]";
+                    sendResponse(exchange, 200, json, "application/json; charset=utf-8");
+                } catch (Exception e) {
+                    sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json; charset=utf-8");
+                }
+            } else if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                try {
+                    Map<String, String> body = parseForm(exchange);
+                    service.rentRoomDirectly(
+                            Integer.parseInt(body.get("clientId")),
+                            Integer.parseInt(body.get("chambreId")),
+                            body.get("dateDebut"),
+                            body.get("dateFin"),
+                            Integer.parseInt(body.get("employeId"))
+                    );
+                    sendResponse(exchange, 200, "Location créée avec succès.", "text/plain; charset=utf-8");
+                } catch (Exception e) {
+                    sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
+                }
+            } else {
                 sendResponse(exchange, 405, "Méthode non permise", "text/plain; charset=utf-8");
-                return;
-            }
-
-            try {
-                Map<String, String> body = parseForm(exchange);
-                service.rentRoomDirectly(
-                        Integer.parseInt(body.get("clientId")),
-                        Integer.parseInt(body.get("chambreId")),
-                        body.get("dateDebut"),
-                        body.get("dateFin"),
-                        Integer.parseInt(body.get("employeId"))
-                );
-                sendResponse(exchange, 200, "Location créée avec succès.", "text/plain; charset=utf-8");
-            } catch (Exception e) {
-                sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
             }
         });
 
@@ -178,6 +185,50 @@ public class Main {
                 int employeId = Integer.parseInt(body.get("employeId"));
                 service.convertReservationToLocation(reservationId, employeId);
                 sendResponse(exchange, 200, "Conversion effectuée avec succès.", "text/plain; charset=utf-8");
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
+            }
+        });
+
+        server.createContext("/api/archive/reservation/", exchange -> {
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Méthode non permise", "text/plain; charset=utf-8");
+                return;
+            }
+
+            String path = exchange.getRequestURI().getPath();
+            String[] parts = path.split("/");
+            if (parts.length != 5 || !parts[4].matches("\\d+")) {
+                sendResponse(exchange, 400, "URL invalide", "text/plain; charset=utf-8");
+                return;
+            }
+
+            try {
+                int id = Integer.parseInt(parts[4]);
+                service.archiveReservation(id);
+                sendResponse(exchange, 200, "Réservation archivée.", "text/plain; charset=utf-8");
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
+            }
+        });
+
+        server.createContext("/api/archive/location/", exchange -> {
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Méthode non permise", "text/plain; charset=utf-8");
+                return;
+            }
+
+            String path = exchange.getRequestURI().getPath();
+            String[] parts = path.split("/");
+            if (parts.length != 5 || !parts[4].matches("\\d+")) {
+                sendResponse(exchange, 400, "URL invalide", "text/plain; charset=utf-8");
+                return;
+            }
+
+            try {
+                int id = Integer.parseInt(parts[4]);
+                service.archiveLocation(id);
+                sendResponse(exchange, 200, "Location archivée.", "text/plain; charset=utf-8");
             } catch (Exception e) {
                 sendResponse(exchange, 500, "Erreur: " + e.getMessage(), "text/plain; charset=utf-8");
             }

@@ -43,6 +43,8 @@ async function loadData() {
   await loadSelect('/api/reservations', convertForm.querySelector('[name=reservationId]'));
   await loadSelect('/api/reservations', locationForm.querySelector('[name=reservationId]'));
   await loadSelect('/api/chains', searchForm.querySelector('[name=chaine]'));
+  await loadSelect('/api/reservations', document.getElementById('archiveReservationSelect'));
+  await loadSelect('/api/locations', document.getElementById('archiveLocationSelect'));
 }
 
 document.addEventListener('DOMContentLoaded', loadData);
@@ -208,6 +210,22 @@ convertForm.addEventListener('submit', async (e) => {
 
   showMessage(await response.text());
   // Reload data
+  loadData();
+});
+
+document.getElementById('archiveReservationBtn').addEventListener('click', async () => {
+  const id = document.getElementById('archiveReservationSelect').value;
+  if (!id) return;
+  const response = await fetch(`/api/archive/reservation/${id}`, { method: 'POST' });
+  showMessage(await response.text());
+  loadData();
+});
+
+document.getElementById('archiveLocationBtn').addEventListener('click', async () => {
+  const id = document.getElementById('archiveLocationSelect').value;
+  if (!id) return;
+  const response = await fetch(`/api/archive/location/${id}`, { method: 'POST' });
+  showMessage(await response.text());
   loadData();
 });
 

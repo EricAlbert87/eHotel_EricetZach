@@ -3,6 +3,7 @@ package com.ehotel.service;
 import com.ehotel.dao.ClientDAO;
 import com.ehotel.dao.EmployeeDAO;
 import com.ehotel.dao.HotelDAO;
+import com.ehotel.dao.LocationDAO;
 import com.ehotel.dao.ReservationDAO;
 import com.ehotel.dao.RoomDAO;
 import com.ehotel.model.BookingRequest;
@@ -16,6 +17,7 @@ public class HotelService {
     private final ClientDAO clientDAO = new ClientDAO();
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
     private final HotelDAO hotelDAO = new HotelDAO();
+    private final LocationDAO locationDAO = new LocationDAO();
 
     public List<RoomSearchResult> searchRooms(String zone, int capacite, double prixMax, double superficieMin, String chaine, int categorie, String dateDebut, String dateFin, int nombreChambres) {
         return roomDAO.searchRooms(zone, capacite, prixMax, superficieMin, chaine, categorie, dateDebut, dateFin, nombreChambres);
@@ -47,6 +49,18 @@ public class HotelService {
 
     public List<String> getAllReservations() {
         return reservationDAO.getAllReservations();
+    }
+
+    public List<String> getAllLocations() {
+        return locationDAO.getAllLocations();
+    }
+
+    public void archiveReservation(int id) {
+        reservationDAO.archiveReservation(id);
+    }
+
+    public void archiveLocation(int id) {
+        locationDAO.archiveLocation(id);
     }
 
     public void convertReservationToLocation(int reservationId, int employeId) {

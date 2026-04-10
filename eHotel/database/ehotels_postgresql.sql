@@ -89,7 +89,7 @@ CREATE TABLE reservation (
     date_debut DATE NOT NULL,
     date_fin DATE NOT NULL,
     date_reservation DATE NOT NULL DEFAULT CURRENT_DATE,
-    statut VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (statut IN ('active','annulée','convertie','terminée')),
+    statut VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (statut IN ('active','annulée','convertie','terminée','archivée')),
     CHECK (date_debut < date_fin)
 );
 
@@ -103,7 +103,7 @@ CREATE TABLE location (
     date_fin DATE NOT NULL,
     date_checkin DATE NOT NULL DEFAULT CURRENT_DATE,
     type_location VARCHAR(20) NOT NULL CHECK (type_location IN ('directe','conversion')),
-    statut VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (statut IN ('active','terminée','annulée')),
+    statut VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (statut IN ('active','terminée','annulée','archivée')),
     CHECK (date_debut < date_fin)
 );
 

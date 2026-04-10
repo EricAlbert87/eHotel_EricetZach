@@ -86,4 +86,18 @@ public class ReservationDAO {
             throw new RuntimeException("Erreur lors de la conversion", e);
         }
     }
+
+    public void archiveReservation(int id) {
+        String sql = "UPDATE reservation SET statut = 'archivée' WHERE reservation_id = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de l'archivage de la réservation", e);
+        }
+    }
 }
