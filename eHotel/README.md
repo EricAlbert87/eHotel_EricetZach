@@ -1,5 +1,27 @@
 # eHotel Application
 
+## Current Defaults (Credentials and Variables)
+
+Application/database defaults currently used by this project:
+
+- DB_NAME=ehotels
+- DB_USER=postgres
+- DB_PASSWORD=postgres
+- DB_HOST=localhost
+- SERVER_PORT=8080
+- APP_JAR=target/ehotel-app-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+Makefile deployment defaults:
+
+- SERVER_USER=user
+- SERVER_HOST=server
+- SERVER_DIR=/opt/ehotel
+
+macOS Makefile extra DB variables:
+
+- DB_ADMIN=$(whoami)
+- DB_ADMIN_PASSWORD= (empty by default)
+
 ## Start the Application (With Make)
 
 1. Open a terminal and go to the project folder.
@@ -17,9 +39,23 @@ make build
 make run
 ```
 
+Linux with explicit vars (same as current defaults):
+```bash
+make setup DB_NAME=ehotels DB_USER=postgres DB_PASSWORD=postgres
+make build
+make run
+```
+
 macOS:
 ```bash
 make -f Makefile.mac setup
+make -f Makefile.mac build
+make -f Makefile.mac run
+```
+
+macOS with explicit vars (same as current defaults):
+```bash
+make -f Makefile.mac setup DB_NAME=ehotels DB_USER=postgres DB_PASSWORD=postgres DB_HOST=localhost DB_ADMIN=$(whoami)
 make -f Makefile.mac build
 make -f Makefile.mac run
 ```
