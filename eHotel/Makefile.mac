@@ -3,19 +3,22 @@ APP_JAR=target/$(APP_NAME)
 DB_NAME=ehotels
 DB_USER=postgres
 DB_PASSWORD=postgres
+DB_HOST=localhost
+DB_ADMIN?=$(shell whoami)
 SQL_FILE=database/ehotels_postgresql.sql
 
 SERVER_USER?=user
 SERVER_HOST?=server
 SERVER_DIR?=/opt/ehotel
 
-.PHONY: help install db-init setup build run start deploy-copy deploy-run deploy clean
+.PHONY: help install doctor db-init setup build run start deploy-copy deploy-run deploy clean
 
 help:
 	@echo "macOS eHotel Build System"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  make install      - Install Java, Maven, PostgreSQL (macOS via Homebrew)"
+	@echo "  make doctor       - Check macOS toolchain and PostgreSQL connectivity"
 	@echo "  make db-init      - Create ehotels database and import SQL file"
 	@echo "  make setup        - install + db-init"
 	@echo "  make build        - Build jar with Maven"
@@ -27,26 +30,41 @@ help:
 	@echo "  make deploy       - build + deploy-copy + deploy-run"
 	@echo ""
 	@echo "Deploy vars: SERVER_USER, SERVER_HOST, SERVER_DIR"
+	@echo "DB vars: DB_ADMIN, DB_USER, DB_PASSWORD, DB_HOST, DB_NAME"
 	@echo "Example: make -f Makefile.mac deploy SERVER_USER=ubuntu SERVER_HOST=1.2.3.4"
 
 install:
 	@echo "Checking if Homebrew is installed..."
 	@command -v brew >/dev/null 2>&1 || (echo "Homebrew not found. Install from https://brew.sh" && exit 1)
 	@echo "Installing Java 21, Maven, and PostgreSQL via Homebrew..."
-	brew tap homebrew/cask-versions
 	brew install openjdk@21 maven postgresql
 	@echo "Starting PostgreSQL service..."
 	brew services start postgresql || brew services restart postgresql
 	@echo "✓ Installation complete"
 
+doctor:
+	@echo "Running macOS installation checks..."
+	@command -v brew >/dev/null 2>&1 || (echo "✗ Homebrew not found" && exit 1)
+	@echo "✓ Homebrew: $$(brew --version | head -1)"
+	@command -v java >/dev/null 2>&1 || (echo "✗ java not found" && exit 1)
+	@echo "✓ Java: $$(java --version 2>&1 | head -1)"
+	@command -v mvn >/dev/null 2>&1 || (echo "✗ maven not found" && exit 1)
+	@echo "✓ Maven: $$(mvn -v 2>/dev/null | head -1)"
+	@command -v psql >/dev/null 2>&1 || (echo "✗ psql not found" && exit 1)
+	@echo "✓ psql: $$(psql --version)"
+	@brew services list | grep postgresql >/dev/null 2>&1 && echo "✓ PostgreSQL service is configured" || echo "! PostgreSQL service not listed in brew services"
+	@command -v pg_isready >/dev/null 2>&1 && pg_isready -h $(DB_HOST) >/dev/null 2>&1 && echo "✓ PostgreSQL is reachable on $(DB_HOST)" || echo "! PostgreSQL not reachable yet on $(DB_HOST)"
+	@echo "✓ Doctor checks finished"
+
 db-init:
 	@test -f "$(SQL_FILE)" || (echo "Missing SQL file: $(SQL_FILE)" && exit 1)
 	@echo "Initializing database..."
 	@command -v psql >/dev/null 2>&1 || (echo "PostgreSQL not installed. Run: make -f Makefile.mac install" && exit 1)
-	psql -U $(DB_USER) -h localhost -c "ALTER USER $(DB_USER) WITH PASSWORD '$(DB_PASSWORD)' WITH LOGIN;" 2>/dev/null || psql -U $(DB_USER) -h localhost -c "CREATE USER $(DB_USER) WITH PASSWORD '$(DB_PASSWORD)';" 2>/dev/null || true
-	psql -U $(DB_USER) -h localhost -c "ALTER USER $(DB_USER) CREATEDB;" 2>/dev/null || true
-	psql -U $(DB_USER) -h localhost -tAc "SELECT 1 FROM pg_database WHERE datname='$(DB_NAME)'" | tr -d '[:space:]' | grep -qx "1" || psql -U $(DB_USER) -h localhost -c "CREATE DATABASE $(DB_NAME);"
-	psql -U $(DB_USER) -h localhost -d $(DB_NAME) < "$(abspath $(SQL_FILE))"
+	@echo "Using admin role: $(DB_ADMIN)"
+	psql -h $(DB_HOST) -U $(DB_ADMIN) -d postgres -c "SELECT 1;" >/dev/null
+	psql -h $(DB_HOST) -U $(DB_ADMIN) -d postgres -v ON_ERROR_STOP=1 -c "DO $$$$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$(DB_USER)') THEN CREATE ROLE $(DB_USER) LOGIN PASSWORD '$(DB_PASSWORD)'; ELSE ALTER ROLE $(DB_USER) WITH LOGIN PASSWORD '$(DB_PASSWORD)'; END IF; END $$$$;"
+	psql -h $(DB_HOST) -U $(DB_ADMIN) -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$(DB_NAME)'" | tr -d '[:space:]' | grep -qx "1" || createdb -h $(DB_HOST) -U $(DB_ADMIN) $(DB_NAME)
+	PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -U $(DB_USER) -d $(DB_NAME) < "$(abspath $(SQL_FILE))"
 	@echo "✓ Database initialized"
 
 setup: install db-init

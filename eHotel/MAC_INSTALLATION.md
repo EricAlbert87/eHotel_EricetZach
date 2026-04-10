@@ -129,7 +129,6 @@ make -f Makefile.mac install
 
 Or manually:
 ```bash
-brew tap homebrew/cask-versions
 brew install openjdk@21 maven postgresql
 brew services start postgresql
 ```
@@ -138,6 +137,12 @@ brew services start postgresql
 
 ```bash
 make -f Makefile.mac db-init
+```
+
+If your local PostgreSQL admin role is not `postgres`, run:
+
+```bash
+make -f Makefile.mac db-init DB_ADMIN=$(whoami)
 ```
 
 Or manually:
@@ -325,6 +330,7 @@ Use `make -f Makefile.mac` instead of `make`:
 
 ```bash
 make -f Makefile.mac help
+make -f Makefile.mac doctor
 make -f Makefile.mac setup
 make -f Makefile.mac build
 make -f Makefile.mac start
@@ -359,7 +365,12 @@ kill -9 <PID>
 
 **Solution**:
 
-1. Verify PostgreSQL is running:
+1. Run the built-in diagnostic:
+   ```bash
+   make -f Makefile.mac doctor
+   ```
+
+2. Verify PostgreSQL is running:
    ```bash
    # Linux
    sudo systemctl status postgresql
@@ -368,7 +379,7 @@ kill -9 <PID>
    brew services list | grep postgresql
    ```
 
-2. Restart PostgreSQL:
+3. Restart PostgreSQL:
    ```bash
    # Linux
    sudo systemctl restart postgresql
@@ -377,7 +388,12 @@ kill -9 <PID>
    brew services restart postgresql
    ```
 
-3. Verify database exists:
+4. If your admin role is not `postgres`, initialize with your local admin role:
+   ```bash
+   make -f Makefile.mac db-init DB_ADMIN=$(whoami)
+   ```
+
+5. Verify database exists:
    ```bash
    # Linux
    sudo -u postgres psql -l | grep ehotels
