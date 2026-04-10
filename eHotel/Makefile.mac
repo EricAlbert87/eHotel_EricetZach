@@ -3,8 +3,9 @@ APP_JAR=target/$(APP_NAME)
 DB_NAME=ehotels
 DB_USER=postgres
 DB_PASSWORD=postgres
-DB_HOST=localhost
+DB_HOST?=localhost
 DB_ADMIN?=$(shell whoami)
+DB_ADMIN_PASSWORD?=
 SQL_FILE=database/ehotels_postgresql.sql
 
 SERVER_USER?=user
@@ -30,16 +31,16 @@ help:
 	@echo "  make deploy       - build + deploy-copy + deploy-run"
 	@echo ""
 	@echo "Deploy vars: SERVER_USER, SERVER_HOST, SERVER_DIR"
-	@echo "DB vars: DB_ADMIN, DB_USER, DB_PASSWORD, DB_HOST, DB_NAME"
+	@echo "DB vars: DB_ADMIN, DB_ADMIN_PASSWORD, DB_USER, DB_PASSWORD, DB_HOST, DB_NAME"
 	@echo "Example: make -f Makefile.mac deploy SERVER_USER=ubuntu SERVER_HOST=1.2.3.4"
 
 install:
 	@echo "Checking if Homebrew is installed..."
 	@command -v brew >/dev/null 2>&1 || (echo "Homebrew not found. Install from https://brew.sh" && exit 1)
 	@echo "Installing Java 21, Maven, and PostgreSQL via Homebrew..."
-	brew install openjdk@21 maven postgresql
+	HOMEBREW_NO_INSTALL_CLEANUP=1 HOMEBREW_NO_ENV_HINTS=1 brew install openjdk@21 maven postgresql
 	@echo "Starting PostgreSQL service..."
-	brew services start postgresql || brew services restart postgresql
+	HOMEBREW_NO_ENV_HINTS=1 brew services start postgresql || HOMEBREW_NO_ENV_HINTS=1 brew services restart postgresql
 	@echo "✓ Installation complete"
 
 doctor:
@@ -61,9 +62,23 @@ db-init:
 	@echo "Initializing database..."
 	@command -v psql >/dev/null 2>&1 || (echo "PostgreSQL not installed. Run: make -f Makefile.mac install" && exit 1)
 	@echo "Using admin role: $(DB_ADMIN)"
-	psql -h $(DB_HOST) -U $(DB_ADMIN) -d postgres -c "SELECT 1;" >/dev/null
-	psql -h $(DB_HOST) -U $(DB_ADMIN) -d postgres -v ON_ERROR_STOP=1 -c "DO $$$$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$(DB_USER)') THEN CREATE ROLE $(DB_USER) LOGIN PASSWORD '$(DB_PASSWORD)'; ELSE ALTER ROLE $(DB_USER) WITH LOGIN PASSWORD '$(DB_PASSWORD)'; END IF; END $$$$;"
-	psql -h $(DB_HOST) -U $(DB_ADMIN) -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$(DB_NAME)'" | tr -d '[:space:]' | grep -qx "1" || createdb -h $(DB_HOST) -U $(DB_ADMIN) $(DB_NAME)
+	@if psql -U $(DB_ADMIN) -d postgres -c "SELECT 1;" >/dev/null 2>&1; then \
+		echo "✓ Admin connection OK (local socket)"; \
+	elif [ -n "$(DB_ADMIN_PASSWORD)" ] && PGPASSWORD="$(DB_ADMIN_PASSWORD)" psql -h $(DB_HOST) -U $(DB_ADMIN) -d postgres -c "SELECT 1;" >/dev/null 2>&1; then \
+		echo "✓ Admin connection OK (TCP with password)"; \
+	else \
+		echo "✗ Cannot connect as admin role '$(DB_ADMIN)'"; \
+		echo "  Try: make -f Makefile.mac db-init DB_ADMIN=<postgres-admin-role>"; \
+		echo "  Or:  make -f Makefile.mac db-init DB_ADMIN=<role> DB_ADMIN_PASSWORD=<password>"; \
+		exit 1; \
+	fi
+	@if psql -U $(DB_ADMIN) -d postgres -c "SELECT 1;" >/dev/null 2>&1; then \
+		psql -U $(DB_ADMIN) -d postgres -v ON_ERROR_STOP=1 -c "DO $$$$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$(DB_USER)') THEN CREATE ROLE $(DB_USER) LOGIN PASSWORD '$(DB_PASSWORD)'; ELSE ALTER ROLE $(DB_USER) WITH LOGIN PASSWORD '$(DB_PASSWORD)'; END IF; END $$$$;"; \
+		psql -U $(DB_ADMIN) -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$(DB_NAME)'" | tr -d '[:space:]' | grep -qx "1" || createdb -U $(DB_ADMIN) $(DB_NAME); \
+	else \
+		PGPASSWORD="$(DB_ADMIN_PASSWORD)" psql -h $(DB_HOST) -U $(DB_ADMIN) -d postgres -v ON_ERROR_STOP=1 -c "DO $$$$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$(DB_USER)') THEN CREATE ROLE $(DB_USER) LOGIN PASSWORD '$(DB_PASSWORD)'; ELSE ALTER ROLE $(DB_USER) WITH LOGIN PASSWORD '$(DB_PASSWORD)'; END IF; END $$$$;"; \
+		PGPASSWORD="$(DB_ADMIN_PASSWORD)" psql -h $(DB_HOST) -U $(DB_ADMIN) -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$(DB_NAME)'" | tr -d '[:space:]' | grep -qx "1" || PGPASSWORD="$(DB_ADMIN_PASSWORD)" createdb -h $(DB_HOST) -U $(DB_ADMIN) $(DB_NAME); \
+	fi
 	PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -U $(DB_USER) -d $(DB_NAME) < "$(abspath $(SQL_FILE))"
 	@echo "✓ Database initialized"
 
