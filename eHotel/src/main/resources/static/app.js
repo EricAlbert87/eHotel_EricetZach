@@ -29,6 +29,8 @@ const defaultZones = [
   'Bangkok Centre'
 ];
 
+let dataLoadRunId = 0;
+
 function showMessage(text) {
   const activeTab = document.querySelector('.tab-content.active');
   if (activeTab) {
@@ -176,6 +178,10 @@ document.addEventListener('change', (e) => {
 
 document.getElementById('loadDataBtn').addEventListener('click', async () => {
   const dataDiv = document.getElementById('dataContainer');
+  const loadDataBtn = document.getElementById('loadDataBtn');
+  const runId = ++dataLoadRunId;
+
+  loadDataBtn.disabled = true;
   dataDiv.innerHTML = '<div style="text-align: center; padding: 2rem;"><p style="color: #667eea; font-size: 1.1rem; font-weight: 600;">⏳ Chargement des données...</p></div>';
 
   const endpoints = [
@@ -189,70 +195,90 @@ document.getElementById('loadDataBtn').addEventListener('click', async () => {
 
   dataDiv.innerHTML = '';
 
-  for (const ep of endpoints) {
-    try {
-      const response = await fetch(ep.url);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const items = await response.json();
-
-      const section = document.createElement('div');
-      section.className = 'data-section';
-      section.innerHTML = `<h3>${ep.name}</h3>`;
-
-      const table = document.createElement('table');
-      table.className = 'data-table';
-
-      const thead = document.createElement('thead');
-      const headerRow = document.createElement('tr');
-      ep.headers.forEach(h => {
-        const th = document.createElement('th');
-        th.textContent = h;
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
-
-      const tbody = document.createElement('tbody');
-      if (items.length === 0) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = ep.headers.length;
-        td.style.textAlign = 'center';
-        td.style.color = '#999';
-        td.textContent = 'Aucune donnée disponible';
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-      } else {
-        items.forEach((item, idx) => {
-          const row = document.createElement('tr');
-          if (ep.name.includes('Réservations')) {
-            const td = document.createElement('td');
-            td.textContent = item;
-            row.appendChild(td);
-          } else {
-            const [id, name] = item.split(': ', 2);
-            const td1 = document.createElement('td');
-            td1.textContent = id;
-            td1.style.fontWeight = '600';
-            td1.style.color = '#667eea';
-            const td2 = document.createElement('td');
-            td2.textContent = name || item;
-            row.appendChild(td1);
-            row.appendChild(td2);
-          }
-          tbody.appendChild(row);
-        });
+  try {
+    for (const ep of endpoints) {
+      if (runId !== dataLoadRunId) {
+        return;
       }
 
-      table.appendChild(tbody);
-      section.appendChild(table);
-      dataDiv.appendChild(section);
-    } catch (e) {
-      console.error(e);
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'data-section';
-      errorDiv.innerHTML = `<h3>${ep.name}</h3><p style="color: #e74c3c; font-weight: 500;">❌ Erreur lors du chargement</p>`;
-      dataDiv.appendChild(errorDiv);
+      try {
+        const response = await fetch(ep.url);
+        if (runId !== dataLoadRunId) {
+          return;
+        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const items = await response.json();
+
+        if (runId !== dataLoadRunId) {
+          return;
+        }
+
+        const section = document.createElement('div');
+        section.className = 'data-section';
+        section.innerHTML = `<h3>${ep.name}</h3>`;
+
+        const table = document.createElement('table');
+        table.className = 'data-table';
+
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        ep.headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        if (items.length === 0) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = ep.headers.length;
+          td.style.textAlign = 'center';
+          td.style.color = '#999';
+          td.textContent = 'Aucune donnée disponible';
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+        } else {
+          items.forEach((item, idx) => {
+            const row = document.createElement('tr');
+            if (ep.name.includes('Réservations')) {
+              const td = document.createElement('td');
+              td.textContent = item;
+              row.appendChild(td);
+            } else {
+              const [id, name] = item.split(': ', 2);
+              const td1 = document.createElement('td');
+              td1.textContent = id;
+              td1.style.fontWeight = '600';
+              td1.style.color = '#667eea';
+              const td2 = document.createElement('td');
+              td2.textContent = name || item;
+              row.appendChild(td1);
+              row.appendChild(td2);
+            }
+            tbody.appendChild(row);
+          });
+        }
+
+        table.appendChild(tbody);
+        section.appendChild(table);
+        dataDiv.appendChild(section);
+      } catch (e) {
+        if (runId !== dataLoadRunId) {
+          return;
+        }
+        console.error(e);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'data-section';
+        errorDiv.innerHTML = `<h3>${ep.name}</h3><p style="color: #e74c3c; font-weight: 500;">❌ Erreur lors du chargement</p>`;
+        dataDiv.appendChild(errorDiv);
+      }
+    }
+  } finally {
+    if (runId === dataLoadRunId) {
+      loadDataBtn.disabled = false;
     }
   }
 });

@@ -13,52 +13,57 @@ public class RoomDAO {
     public List<RoomSearchResult> searchRooms(String zone, int capacite, double prixMax, double superficieMin, String chaine, int categorie, String dateDebut, String dateFin, int nombreChambres) {
         List<RoomSearchResult> rooms = new ArrayList<>();
 
-        String sql = """
-                SELECT c.chambre_id, h.nom AS hotel, ch.nom AS chaine, h.zone, c.numero, c.prix, c.capacite, c.superficie
-                FROM chambre c
-                JOIN hotel h ON h.hotel_id = c.hotel_id
-                JOIN chaine_hotel ch ON ch.chaine_id = h.chaine_id
-                WHERE c.statut = 'disponible'
-                  AND (? = '' OR h.zone = ?)
-                  AND c.capacite >= ?
-                  AND c.prix <= ?
-                  AND c.superficie >= ?
-                  AND (? = '' OR ch.nom = ? OR ch.chaine_id::text = ?)
-                  AND (? = 0 OR h.categorie = ?)
-                  AND (? = '' OR ? = '' OR NOT EXISTS (
-                      SELECT 1 FROM reservation r
-                      WHERE r.chambre_id = c.chambre_id
-                        AND r.statut IN ('active', 'convertie')
-                        AND r.date_debut < ?
-                        AND r.date_fin > ?
-                  ))
-                ORDER BY h.zone, c.prix
-                LIMIT ?
-                """;
+                String sql = """
+                                SELECT c.chambre_id, h.nom AS hotel, ch.nom AS chaine, h.zone, c.numero, c.prix, c.capacite, c.superficie
+                                FROM chambre c
+                                JOIN hotel h ON h.hotel_id = c.hotel_id
+                                JOIN chaine_hotel ch ON ch.chaine_id = h.chaine_id
+                                WHERE c.statut = 'disponible'
+                                    AND (? = '' OR h.zone = ?)
+                                    AND c.capacite >= ?
+                                    AND c.prix <= ?
+                                    AND c.superficie >= ?
+                                    AND (? = '' OR ch.nom = ? OR ch.chaine_id::text = ?)
+                                    AND (? = 0 OR h.categorie = ?)
+                                    AND (? = '' OR ? = '' OR NOT EXISTS (
+                                            SELECT 1 FROM reservation r
+                                            WHERE r.chambre_id = c.chambre_id
+                                                AND r.statut IN ('active', 'convertie')
+                                                AND r.date_debut < ?
+                                                AND r.date_fin > ?
+                                    ))
+                                ORDER BY h.zone, c.prix
+                                LIMIT ?
+                                """;
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, zone == null ? "" : zone);
-            ps.setString(2, zone == null ? "" : zone);
+            String safeZone = zone == null ? "" : zone;
+            String safeChaine = chaine == null ? "" : chaine;
+            String safeDateDebut = dateDebut == null ? "" : dateDebut;
+            String safeDateFin = dateFin == null ? "" : dateFin;
+
+            ps.setString(1, safeZone);
+            ps.setString(2, safeZone);
             ps.setInt(3, capacite);
             ps.setDouble(4, prixMax);
             ps.setDouble(5, superficieMin);
-            ps.setString(6, chaine == null ? "" : chaine);
-            ps.setString(7, chaine == null ? "" : chaine);
-            ps.setString(8, chaine == null ? "" : chaine);
+            ps.setString(6, safeChaine);
+            ps.setString(7, safeChaine);
+            ps.setString(8, safeChaine);
             ps.setInt(9, categorie);
             ps.setInt(10, categorie);
-            ps.setString(11, dateDebut == null ? "" : dateDebut);
-            ps.setString(12, dateFin == null ? "" : dateFin);
-            if (!dateDebut.isEmpty() && !dateFin.isEmpty()) {
-                ps.setDate(13, java.sql.Date.valueOf(dateFin));
-                ps.setDate(14, java.sql.Date.valueOf(dateDebut));
+            ps.setString(11, safeDateDebut);
+            ps.setString(12, safeDateFin);
+            if (!safeDateDebut.isEmpty() && !safeDateFin.isEmpty()) {
+                ps.setDate(13, java.sql.Date.valueOf(safeDateFin));
+                ps.setDate(14, java.sql.Date.valueOf(safeDateDebut));
             } else {
                 ps.setDate(13, java.sql.Date.valueOf("9999-12-31"));
                 ps.setDate(14, java.sql.Date.valueOf("0001-01-01"));
             }
-            ps.setInt(15, nombreChambres);
+            ps.setInt(15, nombreChambres <= 0 ? 10 : nombreChambres);
 
             ResultSet rs = ps.executeQuery();
 

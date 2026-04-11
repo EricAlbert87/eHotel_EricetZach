@@ -168,79 +168,92 @@ FROM hotel h
 JOIN chambre c ON c.hotel_id = h.hotel_id
 GROUP BY h.hotel_id, h.nom;
 
+-- Adjusting the number of hotel chains to 5
+DELETE FROM hotel WHERE chaine_id > 5; -- Remove hotels associated with chains beyond the first 5
+DELETE FROM chaine_email WHERE chaine_id > 5; -- Remove emails for chains beyond the first 5
+DELETE FROM chaine_telephone WHERE chaine_id > 5; -- Remove phone numbers for chains beyond the first 5
+DELETE FROM chaine_hotel WHERE chaine_id > 5; -- Remove chains beyond the first 5
+
 INSERT INTO chaine_hotel (nom, adresse_siege, nb_hotels) VALUES
-('Marriott International', 'Bethesda, Maryland, USA', 0),
-('Hilton Worldwide', 'McLean, Virginia, USA', 0),
-('Hyatt Hotels Corporation', 'Chicago, Illinois, USA', 0),
-('IHG Hotels & Resorts', 'Denham, Buckinghamshire, UK', 0),
-('Accor', 'Issy-les-Moulineaux, France', 0),
-('Wyndham Hotels & Resorts', 'Parsippany, New Jersey, USA', 0),
-('Choice Hotels', 'Rockville, Maryland, USA', 0),
-('Best Western', 'Phoenix, Arizona, USA', 0);
+('Marriott International', 'Bethesda, Maryland, USA', 8),
+('Hilton Worldwide', 'McLean, Virginia, USA', 8),
+('Hyatt Hotels Corporation', 'Chicago, Illinois, USA', 8),
+('IHG Hotels & Resorts', 'Denham, Buckinghamshire, UK', 8),
+('Accor', 'Issy-les-Moulineaux, France', 8);
 
 INSERT INTO chaine_email (chaine_id, email) VALUES
 (1, 'contact@marriott.com'),
 (2, 'contact@hilton.com'),
 (3, 'contact@hyatt.com'),
 (4, 'contact@ihg.com'),
-(5, 'contact@accor.com'),
-(6, 'reservations@wyndham.com'),
-(7, 'info@choicehotels.com'),
-(8, 'bookings@bestwestern.com');
+(5, 'contact@accor.com');
 
 INSERT INTO chaine_telephone (chaine_id, telephone) VALUES
 (1, '1-613-555-1001'),
 (2, '1-416-555-1002'),
 (3, '1-902-555-1003'),
 (4, '1-604-555-1004'),
-(5, '1-514-555-1005'),
-(6, '1-212-555-1006'),
-(7, '+44-207-555-1007'),
-(8, '+81-3-555-1008');
+(5, '1-514-555-1005');
 
-INSERT INTO hotel (chaine_id, nom, categorie, adresse, zone, nb_chambres, email_contact, telephone_contact) VALUES
-(1, 'Marriott Ottawa Downtown', 5, '100 Wellington St, Ottawa, ON', 'Ottawa Centre', 25, 'ottawa@marriott.com', '613-555-2001'),
-(1, 'Marriott Toronto Union', 5, '10 Front St, Toronto, ON', 'Toronto Centre', 30, 'toronto@marriott.com', '416-555-2004'),
-(1, 'Marriott Montreal Central', 4, '300 Rue Sainte-Catherine, Montreal, QC', 'Montreal Centre', 20, 'montreal@marriott.com', '514-555-2003'),
-(1, 'Marriott Vancouver Bay', 5, '99 Bay Ave, Vancouver, BC', 'Vancouver Bay', 28, 'vancouver@marriott.com', '604-555-2008'),
-(2, 'Hilton Toronto Lakeshore', 5, '88 Lake Shore Blvd, Toronto, ON', 'Toronto Waterfront', 32, 'lakeshore@hilton.com', '416-555-2104'),
-(2, 'Hilton Ottawa Central', 4, '110 Elgin St, Ottawa, ON', 'Ottawa Centre', 22, 'ottawa@hilton.com', '613-555-2101'),
-(3, 'Hyatt Halifax Central', 5, '11 Spring Garden Rd, Halifax, NS', 'Halifax Centre', 24, 'halifax@hyatt.com', '902-555-2201'),
-(3, 'Hyatt St Johns Port', 4, '30 Port Ave, St Johns, NL', 'St Johns Port', 18, 'stjohns@hyatt.com', '709-555-2205'),
-(4, 'IHG Vancouver Central', 5, '60 Granville St, Vancouver, BC', 'Vancouver Centre', 26, 'van@ihg.com', '604-555-2301'),
-(4, 'IHG Whistler Alpine', 5, '78 Alpine Rd, Whistler, BC', 'Whistler Alpine', 20, 'whistler@ihg.com', '604-555-2307'),
-(5, 'Accor Montreal Downtown', 5, '90 Rene-Levesque Blvd, Montreal, QC', 'Montreal Centre', 28, 'montreal@accor.com', '514-555-2401'),
-(5, 'Accor Quebec Palace', 5, '100 Grande Allee, Quebec City, QC', 'Quebec Centre', 25, 'quebec@accor.com', '418-555-2406'),
-(6, 'Wyndham New York Times Square', 5, '1500 Broadway, New York, NY', 'Times Square', 35, 'newyork@wyndham.com', '212-555-3001'),
-(6, 'Wyndham Los Angeles Sunset', 5, '5000 Sunset Blvd, Los Angeles, CA', 'Los Angeles', 30, 'losangeles@wyndham.com', '213-555-3002'),
-(7, 'Choice London Piccadilly', 5, '100 Piccadilly, London, UK', 'London Centre', 40, 'london@choicehotels.com', '207-555-4001'),
-(7, 'Choice Paris Champs', 5, '50 Avenue des Champs-Élysées, Paris, France', 'Paris Centre', 36, 'paris@choicehotels.com', '147-555-4002'),
-(8, 'Best Western Tokyo Shibuya', 5, '1 Shibuya Crossing, Tokyo, Japan', 'Shibuya', 32, 'tokyo@bestwestern.com', '335-555-5001'),
-(8, 'Best Western Bangkok Royal', 4, '150 Rajadamri Road, Bangkok, Thailand', 'Bangkok Centre', 28, 'bangkok@bestwestern.com', '226-555-5002');
+WITH hotel_data (chaine_id, nom, categorie, adresse, zone, email_contact, telephone_contact) AS (
+    VALUES
+    (1, 'Marriott Ottawa Downtown', 5, '100 Wellington St, Ottawa, ON', 'Ottawa Centre', 'ottawa@marriott.com', '613-555-2001'),
+    (1, 'Marriott Toronto Union', 5, '10 Front St, Toronto, ON', 'Toronto Centre', 'toronto@marriott.com', '416-555-2002'),
+    (1, 'Marriott Montreal Central', 4, '300 Rue Sainte-Catherine, Montreal, QC', 'Montreal Centre', 'montreal@marriott.com', '514-555-2003'),
+    (1, 'Marriott Vancouver Bay', 5, '99 Bay Ave, Vancouver, BC', 'Vancouver Bay', 'vancouver@marriott.com', '604-555-2004'),
+    (1, 'Marriott Calgary Centre', 4, '120 Stephen Ave, Calgary, AB', 'Calgary Centre', 'calgary@marriott.com', '403-555-2005'),
+    (1, 'Marriott Edmonton Riverside', 4, '88 River Valley Rd, Edmonton, AB', 'Edmonton Riverside', 'edmonton@marriott.com', '780-555-2006'),
+    (1, 'Marriott Quebec Heritage', 5, '15 Grande Allee, Quebec City, QC', 'Quebec Heritage', 'quebec@marriott.com', '418-555-2007'),
+    (1, 'Marriott Halifax Harbour', 4, '55 Water St, Halifax, NS', 'Halifax Harbour', 'halifax@marriott.com', '902-555-2008'),
+    (2, 'Hilton Toronto Lakeshore', 5, '88 Lake Shore Blvd, Toronto, ON', 'Toronto Waterfront', 'lakeshore@hilton.com', '416-555-2101'),
+    (2, 'Hilton Ottawa Central', 4, '110 Elgin St, Ottawa, ON', 'Ottawa Centre', 'ottawa@hilton.com', '613-555-2102'),
+    (2, 'Hilton Winnipeg Plaza', 4, '200 Portage Ave, Winnipeg, MB', 'Winnipeg Centre', 'winnipeg@hilton.com', '204-555-2103'),
+    (2, 'Hilton Victoria Inner Harbour', 5, '20 Government St, Victoria, BC', 'Victoria Harbour', 'victoria@hilton.com', '250-555-2104'),
+    (2, 'Hilton London Downtown', 4, '45 Dundas St, London, ON', 'London Centre', 'london@hilton.com', '519-555-2105'),
+    (2, 'Hilton Saskatoon Riverfront', 4, '75 Spadina Cres, Saskatoon, SK', 'Saskatoon Riverfront', 'saskatoon@hilton.com', '306-555-2106'),
+    (2, 'Hilton Niagara Falls View', 5, '1 Fallsview Blvd, Niagara Falls, ON', 'Niagara Falls', 'niagara@hilton.com', '289-555-2107'),
+    (2, 'Hilton Regina Gateway', 4, '1000 Albert St, Regina, SK', 'Regina Gateway', 'regina@hilton.com', '306-555-2108'),
+    (3, 'Hyatt Halifax Central', 5, '11 Spring Garden Rd, Halifax, NS', 'Halifax Centre', 'halifax@hyatt.com', '902-555-2201'),
+    (3, 'Hyatt St Johns Port', 4, '30 Port Ave, St Johns, NL', 'St Johns Port', 'stjohns@hyatt.com', '709-555-2202'),
+    (3, 'Hyatt Kelowna Lakeview', 5, '120 Lakeshore Rd, Kelowna, BC', 'Kelowna Lakeview', 'kelowna@hyatt.com', '250-555-2203'),
+    (3, 'Hyatt Kamloops Summit', 4, '500 Summit Dr, Kamloops, BC', 'Kamloops Summit', 'kamloops@hyatt.com', '250-555-2204'),
+    (3, 'Hyatt Fredericton Commons', 4, '10 Regent St, Fredericton, NB', 'Fredericton Commons', 'fredericton@hyatt.com', '506-555-2205'),
+    (3, 'Hyatt Moncton Market', 4, '40 Main St, Moncton, NB', 'Moncton Market', 'moncton@hyatt.com', '506-555-2206'),
+    (3, 'Hyatt Sherbrooke Square', 4, '75 King St W, Sherbrooke, QC', 'Sherbrooke Square', 'sherbrooke@hyatt.com', '819-555-2207'),
+    (3, 'Hyatt Charlottetown Seaside', 5, '25 Water St, Charlottetown, PE', 'Charlottetown Seaside', 'charlottetown@hyatt.com', '902-555-2208'),
+    (4, 'IHG Vancouver Central', 5, '60 Granville St, Vancouver, BC', 'Vancouver Centre', 'van@ihg.com', '604-555-2301'),
+    (4, 'IHG Whistler Alpine', 5, '78 Alpine Rd, Whistler, BC', 'Whistler Alpine', 'whistler@ihg.com', '604-555-2302'),
+    (4, 'IHG Richmond Airport', 4, '111 Airport Rd, Richmond, BC', 'Richmond Airport', 'richmond@ihg.com', '604-555-2303'),
+    (4, 'IHG Burnaby Heights', 4, '250 Hastings St, Burnaby, BC', 'Burnaby Heights', 'burnaby@ihg.com', '604-555-2304'),
+    (4, 'IHG Ottawa Parliament', 5, '70 Parliament Hill, Ottawa, ON', 'Ottawa Parliament', 'parliament@ihg.com', '613-555-2305'),
+    (4, 'IHG Toronto Harbourfront', 5, '140 Queens Quay, Toronto, ON', 'Toronto Harbourfront', 'harbourfront@ihg.com', '416-555-2306'),
+    (4, 'IHG Montreal Old Port', 5, '50 Old Port Way, Montreal, QC', 'Montreal Old Port', 'oldport@ihg.com', '514-555-2307'),
+    (4, 'IHG Calgary Tech Park', 4, '300 Tech Park Blvd, Calgary, AB', 'Calgary Tech Park', 'tech@ihg.com', '403-555-2308'),
+    (5, 'Accor Montreal Downtown', 5, '90 Rene-Levesque Blvd, Montreal, QC', 'Montreal Centre', 'montreal@accor.com', '514-555-2401'),
+    (5, 'Accor Quebec Palace', 5, '100 Grande Allee, Quebec City, QC', 'Quebec Centre', 'quebec@accor.com', '418-555-2402'),
+    (5, 'Accor Gatineau Parkside', 4, '200 Laurier St, Gatineau, QC', 'Gatineau Parkside', 'gatineau@accor.com', '819-555-2403'),
+    (5, 'Accor Laval Metro', 4, '410 Des Laurentides Blvd, Laval, QC', 'Laval Metro', 'laval@accor.com', '450-555-2404'),
+    (5, 'Accor Trois-Rivieres Heritage', 4, '75 Des Forges St, Trois-Rivieres, QC', 'Trois-Rivieres Heritage', 'troisrivieres@accor.com', '819-555-2405'),
+    (5, 'Accor Saguenay Fjord', 4, '55 Du Fjord Rd, Saguenay, QC', 'Saguenay Fjord', 'saguenay@accor.com', '418-555-2406'),
+    (5, 'Accor Rimouski Rivage', 4, '12 Saint-Germain E, Rimouski, QC', 'Rimouski Rivage', 'rimouski@accor.com', '418-555-2407'),
+    (5, 'Accor Sherbrooke Plateau', 4, '88 Plateau St, Sherbrooke, QC', 'Sherbrooke Plateau', 'sherbrooke@accor.com', '819-555-2408')
+)
+INSERT INTO hotel (chaine_id, nom, categorie, adresse, zone, nb_chambres, email_contact, telephone_contact)
+SELECT chaine_id, nom, categorie, adresse, zone, 5, email_contact, telephone_contact
+FROM hotel_data
+ORDER BY chaine_id, nom;
 
-INSERT INTO employe (hotel_id, nom_complet, adresse, nas, role_hotel, email, telephone) VALUES
-(1, 'Jean Dupont', '100 Wellington St, Ottawa, ON', 'EMP000001', 'Gestionnaire', 'jean.dupont@marriott.com', '613-555-6001'),
-(1, 'Marie Claire', '100 Wellington St, Ottawa, ON', 'EMP000002', 'Réceptionniste', 'marie@marriott.com', '613-555-6002'),
-(2, 'Michael Johnson', '10 Front St, Toronto, ON', 'EMP000003', 'Gestionnaire', 'michael@marriott.com', '416-555-6003'),
-(2, 'Sarah Wilson', '10 Front St, Toronto, ON', 'EMP000004', 'Réceptionniste', 'sarah@marriott.com', '416-555-6004'),
-(3, 'Pierre Martin', '300 Rue Sainte-Catherine, Montreal, QC', 'EMP000005', 'Gestionnaire', 'pierre@marriott.com', '514-555-6005'),
-(4, 'Lisa Wong', '99 Bay Ave, Vancouver, BC', 'EMP000006', 'Gestionnaire', 'lisa@marriott.com', '604-555-6006'),
-(5, 'David Chen', '88 Lake Shore Blvd, Toronto, ON', 'EMP000007', 'Gestionnaire', 'david@hilton.com', '416-555-6007'),
-(5, 'Emma Taylor', '88 Lake Shore Blvd, Toronto, ON', 'EMP000008', 'Réceptionniste', 'emma@hilton.com', '416-555-6008'),
-(6, 'Robert Brown', '110 Elgin St, Ottawa, ON', 'EMP000009', 'Gestionnaire', 'robert@hilton.com', '613-555-6009'),
-(7, 'Catherine Roy', '11 Spring Garden Rd, Halifax, NS', 'EMP000010', 'Gestionnaire', 'catherine@hyatt.com', '902-555-6010'),
-(7, 'Thomas Moore', '11 Spring Garden Rd, Halifax, NS', 'EMP000011', 'Réceptionniste', 'thomas@hyatt.com', '902-555-6011'),
-(8, 'Sophie Adams', '30 Port Ave, St Johns, NL', 'EMP000012', 'Gestionnaire', 'sophie@hyatt.com', '709-555-6012'),
-(9, 'James White', '60 Granville St, Vancouver, BC', 'EMP000013', 'Gestionnaire', 'james@ihg.com', '604-555-6013'),
-(10, 'Julia Garcia', '78 Alpine Rd, Whistler, BC', 'EMP000014', 'Gestionnaire', 'julia@ihg.com', '604-555-6014'),
-(11, 'Marc Leblanc', '90 Rene-Levesque Blvd, Montreal, QC', 'EMP000015', 'Gestionnaire', 'marc@accor.com', '514-555-6015'),
-(12, 'Nicole Gagnon', '100 Grande Allee, Quebec City, QC', 'EMP000016', 'Gestionnaire', 'nicole@accor.com', '418-555-6016'),
-(13, 'William Smith', '1500 Broadway, New York, NY', 'EMP000017', 'Gestionnaire', 'william@wyndham.com', '212-555-6017'),
-(14, 'Patricia Davis', '5000 Sunset Blvd, Los Angeles, CA', 'EMP000018', 'Gestionnaire', 'patricia@wyndham.com', '213-555-6018'),
-(15, 'Nicholas Hunter', '100 Piccadilly, London, UK', 'EMP000019', 'Gestionnaire', 'nicholas@choicehotels.com', '207-555-6019'),
-(16, 'Elizabeth Turner', '50 Avenue des Champs-Élysées, Paris, France', 'EMP000020', 'Gestionnaire', 'elizabeth@choicehotels.com', '147-555-6020'),
-(17, 'Kevin Nakamura', '1 Shibuya Crossing, Tokyo, Japan', 'EMP000021', 'Gestionnaire', 'kevin@bestwestern.com', '335-555-6021'),
-(18, 'Angela Suwadi', '150 Rajadamri Road, Bangkok, Thailand', 'EMP000022', 'Gestionnaire', 'angela@bestwestern.com', '226-555-6022');
+INSERT INTO employe (hotel_id, nom_complet, adresse, nas, role_hotel, email, telephone)
+SELECT
+    h.hotel_id,
+    'Gestionnaire Hotel ' || h.hotel_id,
+    h.adresse,
+    'EMP' || LPAD(h.hotel_id::text, 6, '0'),
+    'Gestionnaire',
+    'manager' || h.hotel_id || '@hotels.example.com',
+    '613-555-' || (6000 + h.hotel_id)::text
+FROM hotel h
+ORDER BY h.hotel_id;
 
 UPDATE hotel SET gestionnaire_id = (SELECT employe_id FROM employe WHERE hotel_id = hotel.hotel_id AND role_hotel = 'Gestionnaire' LIMIT 1) WHERE gestionnaire_id IS NULL;
 
@@ -256,34 +269,33 @@ INSERT INTO client (nom_complet, adresse, nas, date_inscription, email, telephon
 ('Catherine Martin', '222 Chestnut Ave, Paris, France', 'CLI0009', CURRENT_DATE - INTERVAL '5 days', 'catherine@example.com', '147-555-7009'),
 ('James Wong', '333 Willow St, Tokyo, Japan', 'CLI0010', CURRENT_DATE, 'james@example.com', '335-555-7010');
 
+WITH room_template (numero, prix, commodites, capacite, vue, lit_suppl, etat, superficie, statut) AS (
+    VALUES
+    ('101', 159.99, 'WiFi, TV, Salle de bain luxe', 1, 'ville', FALSE, 'bon état', 20, 'disponible'),
+    ('102', 199.99, 'WiFi, TV, Climatisation, Salle de bain luxe', 2, 'ville', FALSE, 'bon état', 28, 'disponible'),
+    ('103', 249.99, 'WiFi, TV, Mini-bar, Balcon', 2, 'ville', TRUE, 'bon état', 32, 'disponible'),
+    ('104', 199.99, 'WiFi, TV, Bureau', 1, 'cour', FALSE, 'bon état', 22, 'disponible'),
+    ('105', 279.99, 'WiFi, TV, Bureau, Mini-bar, Jacuzzi', 2, 'rivière', TRUE, 'bon état', 38, 'disponible')
+)
+INSERT INTO chambre (hotel_id, numero, prix, commodites, capacite, vue, lit_suppl, etat, superficie, statut)
+SELECT
+    h.hotel_id,
+    rt.numero,
+    rt.prix,
+    rt.commodites,
+    rt.capacite,
+    rt.vue,
+    rt.lit_suppl,
+    rt.etat,
+    rt.superficie,
+    rt.statut
+FROM hotel h
+CROSS JOIN room_template rt
+ORDER BY h.hotel_id, rt.numero;
+
 INSERT INTO chambre (hotel_id, numero, prix, commodites, capacite, vue, lit_suppl, etat, superficie, statut) VALUES
-(1, '101', 159.99, 'WiFi, TV, Salle de bain luxe', 1, 'ville', FALSE, 'bon état', 20, 'disponible'),
-(1, '102', 199.99, 'WiFi, TV, Climatisation, Salle de bain luxe', 2, 'ville', FALSE, 'bon état', 28, 'disponible'),
-(1, '103', 249.99, 'WiFi, TV, Mini-bar, Balcon', 2, 'ville', TRUE, 'bon état', 32, 'disponible'),
-(1, '201', 199.99, 'WiFi, TV, Bureau', 1, 'cour', FALSE, 'bon état', 22, 'disponible'),
-(1, '202', 279.99, 'WiFi, TV, Bureau, Mini-bar, Jacuzzi', 2, 'rivière', TRUE, 'bon état', 38, 'disponible'),
-(2, '301', 179.99, 'WiFi, TV, Salle de bain moderne', 1, 'ville', FALSE, 'bon état', 21, 'disponible'),
-(2, '302', 229.99, 'WiFi, TV, Climatisation, Balcon', 2, 'lac', FALSE, 'bon état', 29, 'disponible'),
-(2, '303', 289.99, 'WiFi, TV, Studio complet, Kitchenette', 2, 'lac', TRUE, 'bon état', 42, 'disponible'),
-(3, '401', 139.99, 'WiFi, TV', 1, 'terrasse', FALSE, 'bon état', 18, 'disponible'),
-(3, '402', 189.99, 'WiFi, TV, Climatisation', 2, 'montagne', FALSE, 'bon état', 26, 'disponible'),
-(4, '501', 329.99, 'WiFi, TV, Suite exécutive, Salon', 2, 'baie', TRUE, 'bon état', 55, 'disponible'),
-(4, '502', 279.99, 'WiFi, TV, Balcon vue mer', 2, 'baie', FALSE, 'bon état', 38, 'disponible'),
-(5, '601', 249.99, 'WiFi, TV, Bureau', 1, 'lac', FALSE, 'bon état', 25, 'disponible'),
-(5, '602', 319.99, 'WiFi, TV, Suite, Salon', 2, 'lac', TRUE, 'bon état', 48, 'disponible'),
-(6, '701', 149.99, 'WiFi, TV, Climatisation', 1, 'rue', FALSE, 'bon état', 20, 'disponible'),
-(7, '801', 199.99, 'WiFi, TV, Balcon', 1, 'port', FALSE, 'bon état', 24, 'disponible'),
-(8, '901', 169.99, 'WiFi, TV, Vue port', 2, 'port', FALSE, 'bon état', 28, 'disponible'),
-(9, '1001', 209.99, 'WiFi, TV, Bureau', 1, 'ruelle', FALSE, 'bon état', 22, 'disponible'),
-(10, '1101', 279.99, 'WiFi, TV, Cheminée, Balcon montagne', 2, 'montagne', TRUE, 'bon état', 40, 'disponible'),
-(11, '1201', 199.99, 'WiFi, TV, Climatisation', 1, 'ville', FALSE, 'bon état', 23, 'disponible'),
-(12, '1301', 229.99, 'WiFi, TV, Balcon panoramique', 2, 'fleuve', FALSE, 'bon état', 31, 'disponible'),
-(13, '1401', 349.99, 'WiFi, TV, Suite Times Square, Spa', 2, 'times square', TRUE, 'bon état', 60, 'disponible'),
-(14, '1501', 329.99, 'WiFi, TV, Suite Hollywood, Terrasse', 2, 'hollywood', TRUE, 'bon état', 58, 'disponible'),
-(15, '1601', 389.99, 'WiFi, TV, Royal Suite, Service conciergerie', 2, 'piccadilly', TRUE, 'bon état', 70, 'disponible'),
-(16, '1701', 399.99, 'WiFi, TV, Penthouse, Vue Eiffel', 2, 'champs elysees', TRUE, 'bon état', 75, 'disponible'),
-(17, '1801', 319.99, 'WiFi, TV, Vue Shibuya Crossing', 2, 'shibuya', FALSE, 'bon état', 45, 'disponible'),
-(18, '1901', 279.99, 'WiFi, TV, Vue Chao Phraya River', 2, 'riverside', FALSE, 'bon état', 42, 'disponible');
+(1, '106', 249.99, 'WiFi, TV, Mini-bar, Balcon', 2, 'ville', TRUE, 'bon état', 32, 'disponible'),
+(1, '107', 279.99, 'WiFi, TV, Bureau, Mini-bar, Jacuzzi', 2, 'rivière', TRUE, 'bon état', 38, 'disponible');
 
 INSERT INTO reservation (client_id, chambre_id, date_debut, date_fin, date_reservation, statut) VALUES
 (1, 1, CURRENT_DATE + 5, CURRENT_DATE + 8, CURRENT_DATE - INTERVAL '2 days', 'active'),
@@ -300,6 +312,21 @@ INSERT INTO location (client_id, chambre_id, reservation_id, employe_id, date_de
 (10, 5, NULL, 4, CURRENT_DATE - INTERVAL '1 day', CURRENT_DATE + 2, CURRENT_DATE - INTERVAL '1 day', 'directe', 'active');
 
 UPDATE hotel h SET nb_chambres = (SELECT COUNT(*) FROM chambre c WHERE c.hotel_id = h.hotel_id);
+
+DO $$
+BEGIN
+    IF (SELECT COUNT(*) FROM chaine_hotel) <> 5 THEN
+        RAISE EXCEPTION 'Expected 5 hotel chains in seed data';
+    END IF;
+
+    IF (SELECT COUNT(*) FROM hotel) <> 40 THEN
+        RAISE EXCEPTION 'Expected 40 hotels in seed data';
+    END IF;
+
+    IF (SELECT COUNT(*) FROM chambre) <> 202 THEN
+        RAISE EXCEPTION 'Expected 202 rooms in seed data';
+    END IF;
+END $$;
 
 SELECT h.zone, h.nom AS hotel, c.numero, c.prix, c.capacite, c.superficie
 FROM chambre c
